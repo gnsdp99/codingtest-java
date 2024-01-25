@@ -8,18 +8,12 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
         int[] dp = new int[N + 1];
-        dp[1] = 1;
-        for (int i = 2; i <= N; i++) {
-            dp[i] = Integer.MAX_VALUE;
-            for (int j = 1; j < i; j++) {
+        for (int i = 1; i <= N; i++) {
+            dp[i] = i;
+            for (int j = 1; j * j <= i; j++) {
                 int square = j * j;
-                if (square > i) {
-                    break;
-                } else if (square == i) {
-                    dp[i] = 1;
-                    break;
-                } else {
-                    dp[i] = Math.min(dp[i], dp[square] + dp[i - square]);
+                if (dp[i] > dp[i - square] + 1) {
+                    dp[i] = dp[i - square] + 1;
                 }
             }
         }
