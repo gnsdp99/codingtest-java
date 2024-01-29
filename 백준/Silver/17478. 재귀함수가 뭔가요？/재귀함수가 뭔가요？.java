@@ -61,8 +61,8 @@ public class Main {
     }
 
     static void printUnderBar(int cnt) {
-        for (int i = 0; i < 4 * cnt; i++) {
-            sb.append("_");
+        for (int i = 0; i < cnt; i++) {
+            sb.append("____");
         }
     }
 }
