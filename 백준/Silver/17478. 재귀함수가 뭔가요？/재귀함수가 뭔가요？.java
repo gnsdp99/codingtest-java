@@ -2,23 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
- * @author 김예훈_1147165
- * @date 24/01/29
- * @link https://www.acmicpc.net/problem/17478
- * @keyword_solution
- * 재귀.
- * 반복 요소: 출력
- * 매개변수: 진행한 횟수
- * 종료 조건: 진행한 횟수가 N보다 커질 때
- * @input
- * 재귀 횟수 (1 <= N <= 50) 
- * @output
- * 재귀 횟수에 따른 챗봇의 응답 출력.
- * @time_complex
- * @perf
- */
-
 public class Main {
 
     static int N;
