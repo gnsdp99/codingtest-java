@@ -53,7 +53,7 @@ public class Main {
                     bitSet = (1 << 21) - 1;
                 }
                 continue;
-            } else if (op.equals("empty")) {
+            } else if (first == 'e') {
                 bitSet = 0;
                 continue;
             }
