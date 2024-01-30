@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
  * @output
  * check연산을 수행할 때만 그 결과를 출력한다.
  * @time_complex O(M)
- * @perf
+ * @perf 324572kb 976ms
  */
 
 public class Main {
@@ -43,8 +43,15 @@ public class Main {
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             String op = st.nextToken();
-            if (op.equals("all")) {
-                bitSet = (1 << 21) - 1;
+            char first = op.charAt(0);
+
+            if (first == 'a') {
+                if (op.charAt(1) == 'd'){
+                    int num = Integer.parseInt(st.nextToken());
+                    bitSet = bitSet | (1 << num);
+                } else {
+                    bitSet = (1 << 21) - 1;
+                }
                 continue;
             } else if (op.equals("empty")) {
                 bitSet = 0;
@@ -52,20 +59,18 @@ public class Main {
             }
 
             int num = Integer.parseInt(st.nextToken());
-            if (op.equals("add")) {
-                bitSet = bitSet | (1 << num);
-            } else if (op.equals("remove")) {
+            if (first == 'r') {
                 if (check(num)) {
                     toggle(num);
                 }
-            } else if (op.equals("check")) {
+            } else if (first == 'c') {
                 if (check(num)) {
                     sb.append("1");
                 } else {
                     sb.append("0");
                 }
                 sb.append("\n");
-            } else if (op.equals("toggle")) {
+            } else if (first == 't') {
                 toggle(num);
             }
         }
