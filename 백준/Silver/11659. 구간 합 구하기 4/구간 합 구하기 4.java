@@ -38,7 +38,7 @@ public class Main {
 
 	static int N, M;
 	
-	static int[] partialSum;
+	static int[] partialSum = new int[100_001];
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -48,7 +48,6 @@ public class Main {
 		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
-		partialSum = new int[N + 1];
 		
 		st = new StringTokenizer(br.readLine());
 		for (int i = 1; i <= N; i++) {
