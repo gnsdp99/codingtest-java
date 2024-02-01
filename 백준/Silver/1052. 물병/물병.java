@@ -52,12 +52,8 @@ public class Main {
         while (true) {
             if (Integer.bitCount(bottle) <= K) break;
 
-            int i = 0;
-            while ((bottle & (1 << i)) == 0) {
-                i++;
-            }
-            bottle += (1 << i);
-            ans += (1 << i);
+            ans += (bottle & (-bottle));
+            bottle += (bottle & (-bottle));
         }
         System.out.println(ans);
     }
