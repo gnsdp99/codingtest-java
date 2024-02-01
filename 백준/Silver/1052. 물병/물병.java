@@ -18,9 +18,9 @@ import java.util.StringTokenizer;
  *
  * - 비트의 개수가 k개 이하가 될 때까지 물병을 새로 사서 연산한다.
  * - 비트가 1인 최상단 비트로부터 k-1번 이하 비트들을 k번 비트로 만들면 된다.
- * ex. 1010010 >> 64 1개 16 1개 2 1개 (k = 2)
- * 00010을 10000으로 만들어야 한다.
- * 1번에 1을 더하는 연산을 반복해야 한다.
+ * - 1번에 1을 더하는 연산을 반복해야 한다.
+ * >> 1인 비트 중 가장 최하위 비트를 똑같이 더해주면 연산 횟수를 줄일 수 있다.
+ * >>>> (Tip!) 비트열의 음수와 AND 연산하면 해당 비트를 구할 수 있다.
  *
  * @input
  * - N <= 10^7
@@ -42,24 +42,23 @@ public class Main {
         int K = Integer.parseInt(st.nextToken());
 
         // logic
+        if (N <= K) {
+            System.out.println(0);
+            return;
+        }
+
         int bottle = N;
         int ans = 0;
         while (true) {
-            if (getNumBit(bottle) <= K) {
-                break;
+            if (Integer.bitCount(bottle) <= K) break;
+
+            int i = 0;
+            while ((bottle & (1 << i)) == 0) {
+                i++;
             }
-            bottle++;
-            ans++;
+            bottle += (1 << i);
+            ans += (1 << i);
         }
         System.out.println(ans);
-    }
-
-    static int getNumBit(int number) {
-        int numBit = 0;
-        char[] bits = Integer.toBinaryString(number).toCharArray();
-        for (char b : bits) {
-            if (b == '1') numBit++;
-        }
-        return numBit;
     }
 }
