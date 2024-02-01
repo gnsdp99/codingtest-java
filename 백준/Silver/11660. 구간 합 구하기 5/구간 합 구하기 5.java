@@ -20,12 +20,14 @@ import java.util.StringTokenizer;
  * (x1, y1) ~ (x2, y2)의 구간 합을 구하려면 (0, 0) ~ (x2, y2)의 합에서 (0, 0) ~ (x1-1, y2)과 (0, 0) ~ (x1, y2-1)의 합을 빼주어야 한다.
  * 그런데 두 합을 뺄 때 (0, 0) ~ (x1-1, y1-1)을 중복해서 빼기 때문에 한 번 더해주어야 한다.
  * 
+ * x1 또는 y1이 1인 경우는 위 식을 사용하지 않고 간단하게 구할 수 있음.
+ * 
  * @input
  * 1 <= N <= 1024 메모리 초과는 안나올듯. 
  * @output
  * (x1, y1) ~ (x2, y2)의 합을 출력.
  * 
- * @time_complex  O(max(N^2), M)
+ * @time_complex  O(N^2)
  * @perf 
  */
 
@@ -59,7 +61,18 @@ public class Main {
 			int x2 = Integer.parseInt(st.nextToken());
 			int y2 = Integer.parseInt(st.nextToken());
 			
-			int sum = partialSum[x2][y2] - partialSum[x1 - 1][y2] - partialSum[x2][y1 - 1] + partialSum[x1 - 1][y1 - 1];
+			int sum = partialSum[x2][y2];
+			
+			if (x1 == 1 && y1 != 1) {
+				sum -= partialSum[x2][y1 - 1];
+			}
+			if (y1 == 1) {
+				sum -= partialSum[x1 - 1][y2];
+			}  
+			if (x1 != 1 && y1 != 1) {
+				sum -= (partialSum[x1 - 1][y2] + partialSum[x2][y1 - 1] - partialSum[x1 - 1][y1 - 1]);
+			}
+			
 			sb.append(sum).append("\n");
 		}
 		System.out.println(sb);
