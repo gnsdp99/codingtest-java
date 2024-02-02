@@ -46,10 +46,13 @@ public class Main {
 		
 		char ch = nth == 0 ? '2' : '0';
 		while (ch <= '9') {
-			int tmp = Integer.parseInt(selected + ch);
-			if (isPrimeNumber(tmp)) {
-				makePermutation(nth + 1, selected + ch);
-			}
+            // 짝수 가지치기
+            if (!(nth != 0 && isEvenNum(ch))) {
+            	int tmp = Integer.parseInt(selected + ch);
+            	if (isPrimeNumber(tmp)) {
+            		makePermutation(nth + 1, selected + ch);
+            	}
+            }
 			ch++;
 		}
 	}
@@ -62,4 +65,8 @@ public class Main {
 		}
 		return true;
 	}
+    
+    static boolean isEvenNum(char ch) {
+        return (ch == '0' || ch == '2' || ch == '4' || ch == '6' || ch == '8');
+    }
 }
