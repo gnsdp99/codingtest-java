@@ -16,10 +16,9 @@ import java.util.StringTokenizer;
  * 
  * 구현
  * 1. 자신의 왼쪽 탑들을 모두 탐색하면서 가장 가깝고 높은 탑을 찾는다. O(N^2) -> X
- * 2. 스택을 사용하여 수신기의 후보가 될 수 있는 탑들을 관리한다.
- * - 왼쪽 탑부터 하나씩 스택의 top과 비교하며 자신보다 큰 top이 나올 때까지 꺼낸다.
- * - 찾거나 모두 꺼내면 자기 자신을 넣는다. 
- * - 스택의 요소는 Integer 배열 [번호, 높이]이다.
+ * 2. 스택을 사용하여 수신기의 후보가 될 수 있는 탑들을 관리한다. 147,892kb, 1,000ms -> X
+ * 3. 
+ * 
  * 
  * 주의
  * - 탑의 높이는 탑의 번호가 아니다.
@@ -32,16 +31,15 @@ import java.util.StringTokenizer;
  * - 왼쪽 탑부터 순서대로 자신이 발사한 레이저를 수신하는 탑의 번호를 출력한다.
  * - 번호 사이에 빈칸 하나를 둔다.
  * - 아무도 레이저를 수신하지 못하면 0을 출력한다.
- * @time_complex O(N)
- * - 오름차순인 경우 -> O(N)
- * - 내림차순인 경우 -> O(N)
+ * @time_complex 
  * @perf 
  */
 
 public class Main {
 
 	static int N, num = 1;
-	static Stack<Integer[]> stack = new Stack<>();
+	static Stack<Integer> stackHeight = new Stack<>();
+	static Stack<Integer> stackNum = new Stack<>();
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -53,19 +51,22 @@ public class Main {
 		st = new StringTokenizer(br.readLine());
 	
 		// 첫 번째 탑
-		stack.add(new Integer[] {num++, Integer.parseInt(st.nextToken())});
+		stackHeight.add(Integer.parseInt(st.nextToken()));
+		stackNum.add(num++);
 		sb.append(0).append(" ");
 		
 		while (st.hasMoreTokens()) {
 			int tower = Integer.parseInt(st.nextToken());
-			while (!stack.isEmpty() && stack.peek()[1] <= tower) {
-				stack.pop();
+			while (!stackHeight.isEmpty() && stackHeight.peek() <= tower) {
+				stackHeight.pop();
+				stackNum.pop();
 			}
-			if (stack.isEmpty()) sb.append(0);
-			else sb.append(stack.peek()[0]);
+			if (stackNum.isEmpty()) sb.append(0);
+			else sb.append(stackNum.peek());
 			sb.append(" ");
 			
-			stack.add(new Integer[] {num++, tower});
+			stackHeight.add(tower);
+			stackNum.add(num++);
 		}
 		System.out.println(sb);
 	}
