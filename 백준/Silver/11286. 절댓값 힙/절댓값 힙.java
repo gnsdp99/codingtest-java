@@ -28,15 +28,15 @@ import java.util.Queue;
  * - 배열이 비어있을 때는 0을 출력한다.
  * 
  * @time_complex O(N)
- * @perf 
+ * @perf 29028kb, 452ms
  */
 
 public class Main {
 
 	static int N;
 	static Queue<Integer> heap = new PriorityQueue<>((i1, i2) -> {
-		if (Math.abs(i1) == Math.abs(i2)) return Integer.compare(i1, i2);
-		return Integer.compare(Math.abs(i1), Math.abs(i2));
+		int abs1 = Math.abs(i1), abs2 = Math.abs(i2);
+		return (abs1 == abs2) ? Integer.compare(i1, i2) : Integer.compare(abs1, abs2);
 	});
 	
 	public static void main(String[] args) throws IOException {
@@ -47,11 +47,7 @@ public class Main {
 		for (int i = 0; i < N; i++) {
 			int x = Integer.parseInt(br.readLine());
 			if (x != 0) heap.offer(x);
-			else {
-				if (heap.isEmpty()) sb.append(0);
-				else sb.append(heap.poll());
-				sb.append("\n");
-			}
+			else sb.append(heap.isEmpty() ? 0 : heap.poll()).append("\n");
 		}
 		System.out.println(sb);
 	}
