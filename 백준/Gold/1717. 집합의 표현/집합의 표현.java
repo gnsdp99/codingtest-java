@@ -25,7 +25,7 @@ import java.util.StringTokenizer;
  * 시간복잡도
  * - O(1) or O(logN)
  *
- * 결과
+ * 결과 56308kb, 388ms
  *
  */
 
@@ -62,12 +62,9 @@ public class Main {
         System.out.println(sb);
     }
 
-    static int find(int a) { // 같은 집합에 속하면 true
-        int pa = parents[a];
-        if (pa == a) return pa; // 루트이면 바로 리턴
-
-        parents[a] = find(pa); // 루트 노드를 찾는 과정에서 경로 압축
-        return parents[a];
+    static int find(int node) { // 집합의 루트 노드를 찾는다.
+        if (parents[node] == node) return node; // 루트 노드면 리턴
+        return parents[node] = find(parents[node]); // 루트 노드를 찾는 과정에서 경로 압축
     }
 
     static void union(int a, int b) {
