@@ -3,13 +3,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * @author 김예훈
@@ -22,8 +20,7 @@ import java.util.TreeMap;
  * 
  * 구현
  * - 가중치가 없는 최단거리 알고리즘이므로 다익스트라 알고리즘을 사용한다.
- * - 우선순위 큐를 사용할 때 거리가 최소인 노드를 정렬해야 하므로 배열을 사용해야 한다.
- * - 이때 Comparator로 우선순위 기준을 만들어야 한다.
+ * - 가중치가 없기 때문에 현재 노드에서 최단 거리를 업데이트한 노드들은 바로 방문 처리해도 된다.
  * 
  * @input
  * - 도시의 개수 N [2, 300,000]
@@ -44,13 +41,10 @@ public class Main {
 
 	static int N, M, K, X;
 	static List<ArrayList<Integer>> graph = new ArrayList<>(); // 인접 리스트
-	static int[] dists; // 거리 배열
-	static boolean[] visited; // 방문 배열
-	static Queue<int[]> pq = new PriorityQueue<>((o1, o2) -> {
-		if (o1[0] == o2[0]) return (o1[1] - o2[1]);
-		else return (o1[0] - o2[0]);
-	}); // 최단 거리 큐
-
+	static boolean[] visited; // 방문 여부 배열
+	static Queue<int[]> queue = new ArrayDeque<>(); // 다익스트라 큐
+	static Set<Integer> visitedNodes = new TreeSet<>(); // 최소 거리 K인 노드 집합
+ 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
@@ -64,7 +58,6 @@ public class Main {
 			X = Integer.parseInt(st.nextToken());
 		}
 		visited = new boolean[N + 1];
-		dists = new int[N + 1];
 		
 		// 인접 리스트 생성
 		for (int i = 0; i <= N; i++) {
@@ -76,32 +69,33 @@ public class Main {
 			int B = Integer.parseInt(st.nextToken());
 			graph.get(A).add(B);
 		}
-		// 거리 배열 초기화
-		for (int i = 1; i <= N; i++) {
-			if (i != X) dists[i] = Integer.MAX_VALUE;
-		}
 		
 		// 다익스트라 
-		pq.offer(new int[] {0, X});
-		while (!pq.isEmpty()) {
-			int[] cur = pq.poll();
-			for (int next: graph.get(cur[1])) {
-				if (visited[next]) continue;
-				int newDist = cur[0] + 1;
-				if (dists[next] > newDist) {
-					dists[next] = newDist;
-					pq.offer(new int[] {dists[next], next});
-				}
-				
+		queue.offer(new int[] {0, X});
+		visited[X] = true;
+		while (!queue.isEmpty()) {
+			int[] cur = queue.poll();
+			int dist = cur[0];
+			int node = cur[1];
+			
+			if (dist == K) {
+				visitedNodes.add(node);
+				continue; // 최소 거리 K인 노드 다음 노드들은 K를 넘게 됨.
 			}
-			visited[cur[1]] = true;
+			
+			for (int next: graph.get(node)) {
+				if (visited[next]) continue;
+				visited[next] = true;
+				queue.offer(new int[] {dist + 1, next});
+			}
 		}
-
-		// 최단 거리 K인 노드 찾기
-		for (int i = 1; i <= N; i++) {
-			if (dists[i] == K) sb.append(i).append("\n");
+		
+		if (visitedNodes.size() == 0) sb.append(-1);
+		else {
+			for (Integer node: visitedNodes) {
+				sb.append(node).append("\n");
+			}
 		}
-		if (sb.length() == 0) sb.append(-1);
 		System.out.println(sb);
 	}
 }
