@@ -28,12 +28,12 @@ import java.util.*;
  * - 우선순위 큐로 구현 시 O(ElogV)
  *
  * 결과
- *
+ * 122236kb, 832ms
  * */
 
 public class Main {
 	
-	static class Node {
+	static class Node implements Comparable<Node> {
 	    int num;
 	    int dist;
 
@@ -41,14 +41,20 @@ public class Main {
 	        this.num = num;
 	        this.dist = dist;
 	    }
+
+		@Override
+		public int compareTo(Node o) {
+			return Integer.compare(dist, o.dist);
+		}
 	}
 	
     static final int MAX = Integer.MAX_VALUE;
     static int V, E, K;
     static int[] dists; // 시작점으로부터의 최소 거리 배열
-    static Queue<Node> priorityQueue = new PriorityQueue<>((n1, n2) -> {
-        return Integer.compare(n1.dist, n2.dist); // Node 클래스의 비교 기준을 설정해야 한다.
-    }); // 우선순위 큐
+    static Queue<Node> priorityQueue = new PriorityQueue<>();
+//    static Queue<Node> priorityQueue = new PriorityQueue<>((n1, n2) -> {
+//        return Integer.compare(n1.dist, n2.dist); // Node 클래스의 비교 기준을 설정해야 한다.
+//    }); // 우선순위 큐
     static ArrayList<ArrayList<Node>> graph = new ArrayList<>(); // 연결 리스트
 
     public static void main(String[] args) throws IOException {
