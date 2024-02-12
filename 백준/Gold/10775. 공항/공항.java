@@ -27,12 +27,12 @@ import java.io.InputStreamReader;
  * 시간복잡도
  * - O(N * logN)
 
- * 결과
+ * 결과 22116kb, 208ms
  *
  * */
 public class Main {
     static int G, P;
-    static int[] parents, ranks;
+    static int[] parents;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -40,7 +40,6 @@ public class Main {
         G = Integer.parseInt(br.readLine());
         P = Integer.parseInt(br.readLine());
         parents = new int[G + 1];
-        ranks = new int[G + 1];
         for (int i = 0; i <= G; i++) {
             parents[i] = i;
         }
