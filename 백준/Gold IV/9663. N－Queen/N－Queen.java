@@ -29,37 +29,36 @@ import java.io.InputStreamReader;
 public class Main {
 
     static int N, ans;
-    static int[] board; // 인덱스: 열, 값: 행
+    static boolean[] rows, left_cross, right_cross;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        board = new int[N];
+        
+        rows = new boolean[N];
+        left_cross = new boolean[2 * N];
+        right_cross = new boolean[2 * N];
 
         backtracking(0);
         System.out.println(ans);
     }
 
-    static void backtracking(int col) {
-        if (col == N) {
+    static void backtracking(int row) {
+        if (row == N) {
             ans++;
             return;
         }
         
-        for (int row = 0; row < N; row++) {
-            board[col] = row;
-            
-            if (!isPossible(col)) continue;
-         
-            backtracking(col + 1);
-        }
-    }
-    
-    static boolean isPossible(int col) {
-        for (int c = 0; c < col; c++) {
-            if (board[col] == board[c] || Math.abs(board[col] - board[c]) == (col - c)) return false;
-        }
-        
-        return true;
+        for (int col = 0; col < N; col++) {
+			if (rows[col] || left_cross[row + col] || right_cross[row - col + N]) continue;
+			
+			rows[col] = true;
+			left_cross[row + col] = true;
+			right_cross[row - col + N] = true;
+			backtracking(row + 1);
+			rows[col] = false;
+			left_cross[row + col] = false;
+			right_cross[row - col + N] = false;
+		}
     }
 }
