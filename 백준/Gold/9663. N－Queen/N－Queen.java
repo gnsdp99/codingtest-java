@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 /**
  * @author 김예훈
@@ -31,32 +29,37 @@ import java.util.Arrays;
 public class Main {
 
     static int N, ans;
-    static int[] placed; // 인덱스: 열, 값: 행
+    static int[] board; // 인덱스: 열, 값: 행
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        placed = new int[N + 1];
+        board = new int[N];
 
-        makePermutation(1);
+        backtracking(0);
         System.out.println(ans);
     }
 
-    static void makePermutation(int col) {
-        if (col > N) {
+    static void backtracking(int col) {
+        if (col == N) {
             ans++;
             return;
         }
-        outer: for (int row = 1; row <= N; row++) {
-            for (int i = 1; i < col; i++) {
-                int tmp = placed[col - i];
-                if (tmp == row || tmp == (row - i) || tmp == (row + i)) {
-                    continue outer;
-                }
-            }
-            placed[col] = row;
-            makePermutation(col + 1);
-            placed[col] = 0;
+        
+        for (int row = 0; row < N; row++) {
+            board[col] = row;
+            
+            if (!isPossible(col)) continue;
+         
+            backtracking(col + 1);
         }
+    }
+    
+    static boolean isPossible(int col) {
+        for (int c = 0; c < col; c++) {
+            if (board[col] == board[c] || Math.abs(board[col] - board[c]) == (col - c)) return false;
+        }
+        
+        return true;
     }
 }
