@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
@@ -23,6 +22,8 @@ import java.util.StringTokenizer;
  * 그리디 + 백트래킹
  * - 맨 위 행부터 연결을 시도한다.
  * - 방향도 위부터 연결을 시도한다.
+ * - 위쪽 행에서 탐색을 실패한 곳은 아래 행에서도 무조건 실패할 것이다.
+ * - 따라서 한 번 방문한 곳은 무조건 방문 표시를 해서 다시 방문하지 않도록 한다.
  *  
  * @input 
  * - R [1, 10,000]
@@ -33,7 +34,7 @@ import java.util.StringTokenizer;
  * - 설치할 수 있는 파이프라인의 최대 개수를 출력한다.
  * 
  * @time_complex  O(RC)
- * @perf 
+ * @perf  37080kb, 300ms
  */
 
 public class Main {
@@ -57,13 +58,13 @@ public class Main {
 		}
 		
 		for (int r = 0; r < R; r++) {
-			if (backtracking(r, 0)) ans++;
+			if (connect(r, 0)) ans++;
 		}
 		
 		System.out.println(ans);
 	}
 	
-	static boolean backtracking(int row, int col) {
+	static boolean connect(int row, int col) {
 		map[row][col] = 'x';
 		
 		if (col == C - 1) return true;
@@ -72,7 +73,7 @@ public class Main {
 			int nx = row + delta[i];
 			int ny = col + 1;
 			if (isIn(nx, ny) && map[nx][ny] == '.') {
-				if (backtracking(nx, ny)) return true;
+				if (connect(nx, ny)) return true;
 			}
 		}
 		return false;
