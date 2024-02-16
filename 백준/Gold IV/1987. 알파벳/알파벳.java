@@ -25,12 +25,14 @@ import java.util.StringTokenizer;
  * - 말이 지날 수 있는 최대 칸 수를 출력한다. (1, 1) 포함.
  *
  * @time_complex O(RC) 최대 모든 칸을 한 번씩 탐색해야 한다.
- * @perf
+ * @perf 12552kb, 896ms
  */
 
 public class Main {
+
+    static final int MAXCNT = 'Z' - 'A' + 1; // 최대 알파벳 개수
     static int R, C, ans;
-    static int[][] map; // 알파벳을 0 ~ 25의 숫자로 표현
+    static char[][] map;
     static int[] deltaX = {-1, 0, 1, 0};
     static int[] deltaY = {0, 1, 0, -1};
     static boolean[][] visited;
@@ -43,19 +45,20 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
-        map = new int[R + 1][C + 1];
+        map = new char[R + 1][C + 1];
         visited = new boolean[R + 1][C + 1];
         for (int i = 1; i <= R; i++) {
             char[] row = br.readLine().toCharArray();
             for (int j = 1; j <= row.length; j++) {
-                map[i][j] = row[j - 1] - 'A';
+                map[i][j] = row[j - 1];
             }
         }
 
         // (1, 1) 포함
         ans = 1;
+        visited[1][1] = true;
 
-        DFS(1, 1, (1 << map[1][1]), 1);
+        DFS(1, 1, (1 << (map[1][1] - 'A')), 1);
 
         System.out.println(ans);
     }
@@ -64,10 +67,11 @@ public class Main {
         for (int i = 0; i < 4; i++) {
             int nx = x + deltaX[i];
             int ny = y + deltaY[i];
-            if (isIn(nx, ny) && (alphabetBit & (1 << map[nx][ny])) == 0) {
+            if (isIn(nx, ny) && !visited[nx][ny] && (alphabetBit & (1 << (map[nx][ny]) - 'A')) == 0) {
                 visited[nx][ny] = true;
-                DFS(nx, ny, alphabetBit | (1 << map[nx][ny]), cnt + 1);
                 ans = ans < cnt + 1 ? cnt + 1 : ans;
+                if (ans == MAXCNT) return; // 알파벳 전부 방문 시 더 탐색할 필요 없음
+                DFS(nx, ny, alphabetBit | (1 << (map[nx][ny] - 'A')), cnt + 1);
                 visited[nx][ny] = false;
             }
         }
