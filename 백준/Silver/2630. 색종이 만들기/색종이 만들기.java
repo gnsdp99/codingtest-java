@@ -30,7 +30,7 @@ import java.util.StringTokenizer;
  *
  * 시간복잡도 O(N^2)
  *
- * 결과
+ * 결과 13228kb, 104ms
  *
  * */
 
@@ -43,15 +43,14 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
 
         // 입력
         N = Integer.parseInt(br.readLine());
         map = new int[N][N];
         for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
+            char[] row = br.readLine().toCharArray();
             for (int j = 0; j < N; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
+                map[i][j] = row[j * 2] - '0';
             }
         }
 
@@ -73,7 +72,7 @@ public class Main {
         }
 
         int half = size / 2;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) { // 4등분
             divide(sx + delta[i][X] * half, sy + delta[i][Y] * half, half);
         }
     }
