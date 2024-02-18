@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main { // Kruskal Algorithm
@@ -31,7 +32,7 @@ public class Main { // Kruskal Algorithm
     }
     static int V, E;
     static long ans = 0;
-    static ArrayList<Edge> edges = new ArrayList<>();
+    static PriorityQueue<Edge> edgesPQ = new PriorityQueue<>();
     static Subset[] subsets; // 부분 집합 배열
 
     public static void main(String[] args) throws IOException {
@@ -50,7 +51,7 @@ public class Main { // Kruskal Algorithm
             int A = Integer.parseInt(st.nextToken());
             int B = Integer.parseInt(st.nextToken());
             int C = Integer.parseInt(st.nextToken());
-            edges.add(new Edge(A, B, C));
+            edgesPQ.offer(new Edge(A, B, C));
         }
 
         kruskal();
@@ -58,11 +59,9 @@ public class Main { // Kruskal Algorithm
     }
 
     static void kruskal() {
-        Collections.sort(edges); // 가중치 순으로 정렬
         int numSelected = 0; // MST 집합에 포함한 간선의 수
-        int idx = 0; // idx번째 간선
         while (numSelected < V - 1) {
-            Edge edge = edges.get(idx++);
+            Edge edge = edgesPQ.poll();
             int rootSrc = find(edge.src);
             int rootDst = find(edge.dst);
             if (rootSrc != rootDst) { // 사이클을 생성하지 않으므로 합집합
