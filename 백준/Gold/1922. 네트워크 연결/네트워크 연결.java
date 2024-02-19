@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 /**
@@ -24,7 +25,7 @@ import java.util.StringTokenizer;
  * O(E logV)
  *
  * 결과
- *
+ * 47,816kb, 500ms
  * */
 public class Main {
     static class Edge implements Comparable<Edge> {
@@ -49,8 +50,8 @@ public class Main {
         }
     }
     static int N, M;
-    static ArrayList<Edge> edges = new ArrayList<>();
-    static Subset[] subsets;
+    static PriorityQueue<Edge> edgePQ = new PriorityQueue<>();
+    static Subset[] subsets; 
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -64,18 +65,16 @@ public class Main {
             int A = Integer.parseInt(st.nextToken());
             int B = Integer.parseInt(st.nextToken());
             int C = Integer.parseInt(st.nextToken());
-            edges.add(new Edge(A, B, C));
+            edgePQ.offer(new Edge(A, B, C));
         }
         for (int i = 1; i <= N; i++) {
             subsets[i] = new Subset(i, 0);
         }
 
-        Collections.sort(edges);
         int cnt = 0;
-        int idx = 0;
         int ans = 0;
         while (cnt < N - 1) { // N-1개의 간선 선택
-            Edge edge = edges.get(idx++);
+            Edge edge = edgePQ.poll();
             int rootA = find(edge.src);
             int rootB = find(edge.dst);
             if (rootA == rootB) continue; // 사이클
