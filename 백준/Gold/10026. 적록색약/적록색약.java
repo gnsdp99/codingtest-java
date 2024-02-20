@@ -17,12 +17,12 @@
  * 
  * @time_complex O(N^2) 그리드 전체를 탐색
  * @perf 
+ * BFS 12,392kb, 100ms
+ * DFS 
  */
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Queue;
-import java.util.ArrayDeque;
 
 public class Main {
 	
@@ -56,19 +56,19 @@ public class Main {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (boardColor[i][j] == 'B') { // 적록색약인 사람과 아닌 사람이 똑같음
-					bfsFloodFill(boardColor, i, j, 'B');
-					bfsFloodFill(boardNonColor, i, j, 'B');
+					dfsFloodFill(boardColor, i, j, 'B');
+					dfsFloodFill(boardNonColor, i, j, 'B');
 					ansColor++;
 					ansNonColor++;
 				} else if (boardColor[i][j] == 'R') {
-					bfsFloodFill(boardColor, i, j, 'R');
+					dfsFloodFill(boardColor, i, j, 'R');
 					ansColor++;
 				} else if (boardColor[i][j] == 'G') {
-					bfsFloodFill(boardColor, i, j, 'G');
+					dfsFloodFill(boardColor, i, j, 'G');
 					ansColor++;
 				}
 				if (boardNonColor[i][j] == 'R') {
-					bfsFloodFill(boardNonColor, i, j, 'R');
+					dfsFloodFill(boardNonColor, i, j, 'R');
 					ansNonColor++;
 				}
 			}
@@ -76,24 +76,13 @@ public class Main {
 		System.out.println(ansColor + " " + ansNonColor);
 	}
 	
-	static void bfsFloodFill(char[][] board, int sx, int sy, char color) {
-		Queue<Pos> queue = new ArrayDeque<>();
-		queue.offer(new Pos(sx, sy));
-		while (!queue.isEmpty()) {
-			Pos cur = queue.poll();
-			for (int d = 0; d < delta.length; d++) {
-				int nx = cur.x + delta[d].x;
-				int ny = cur.y + delta[d].y;
-				if (isIn(nx, ny) && board[nx][ny] == color) {
-					queue.offer(new Pos(nx, ny));
-					board[nx][ny] = 'X'; // 방문 처리
-				}
-			}
-		}
-	}
-	
-	static void dfsFloodFill() {
+	static void dfsFloodFill(char[][] board, int x, int y, char color) {
+		if (!isIn(x, y) || board[x][y] != color) return;
 		
+		board[x][y] = 'X'; // 방문 처리
+		for (int d = 0; d < delta.length; d++) {
+			dfsFloodFill(board, x + delta[d].x, y + delta[d].y, color);
+		}
 	}
 	
 	static boolean isIn(int x, int y) {
