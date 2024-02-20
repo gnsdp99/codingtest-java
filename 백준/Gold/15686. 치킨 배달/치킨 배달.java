@@ -30,8 +30,8 @@ import java.util.StringTokenizer;
  * @output
  * - M개의 치킨집을 골랐을 때 도시의 치킨 거리의 최솟값을 출력한다.
  * 
- * @time_complex  
- * @perf 
+ * @time_complex  O(13CM)
+ * @perf 12,896kb, 144ms
  */
 
 public class Main {
@@ -41,9 +41,6 @@ public class Main {
 		House(int x, int y) {
 			this.x = x;
 			this.y = y;
-		}
-		public String toString() {
-			return "[x: " + x + ", y: " + y + "]";
 		}
 	}
 	static int N, M, MAXDIST, ans;
