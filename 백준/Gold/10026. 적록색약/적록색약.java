@@ -18,7 +18,7 @@
  * @time_complex O(N^2) 그리드 전체를 탐색
  * @perf 
  * BFS 12,392kb, 100ms
- * DFS 
+ * DFS 12,172kb, 92ms
  */
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -55,20 +55,12 @@ public class Main {
 		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (boardColor[i][j] == 'B') { // 적록색약인 사람과 아닌 사람이 똑같음
-					dfsFloodFill(boardColor, i, j, 'B');
-					dfsFloodFill(boardNonColor, i, j, 'B');
-					ansColor++;
-					ansNonColor++;
-				} else if (boardColor[i][j] == 'R') {
-					dfsFloodFill(boardColor, i, j, 'R');
-					ansColor++;
-				} else if (boardColor[i][j] == 'G') {
-					dfsFloodFill(boardColor, i, j, 'G');
+				if (boardColor[i][j] != 'X') {
+					dfsFloodFill(boardColor, i, j);
 					ansColor++;
 				}
-				if (boardNonColor[i][j] == 'R') {
-					dfsFloodFill(boardNonColor, i, j, 'R');
+				if (boardNonColor[i][j] != 'X') {
+					dfsFloodFill(boardNonColor, i, j);
 					ansNonColor++;
 				}
 			}
@@ -76,12 +68,13 @@ public class Main {
 		System.out.println(ansColor + " " + ansNonColor);
 	}
 	
-	static void dfsFloodFill(char[][] board, int x, int y, char color) {
-		if (!isIn(x, y) || board[x][y] != color) return;
-		
+	static void dfsFloodFill(char[][] board, int x, int y) {
+		char color = board[x][y]; 
 		board[x][y] = 'X'; // 방문 처리
 		for (int d = 0; d < delta.length; d++) {
-			dfsFloodFill(board, x + delta[d].x, y + delta[d].y, color);
+			int nx = x + delta[d].x;
+			int ny = y + delta[d].y;
+			if (isIn(nx, ny) && board[nx][ny] == color) dfsFloodFill(board, nx, ny);
 		}
 	}
 	
