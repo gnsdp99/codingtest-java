@@ -43,9 +43,16 @@ public class Main {
             return Integer.compare(cost, e.cost);
         }
     }
+    static class Subset {
+    	int parent, rank;
+    	Subset(int parent, int rank) {
+    		this.parent = parent;
+    		this.rank = rank;
+    	}
+    }
     static int N, M;
     static PriorityQueue<Edge> edgePQ = new PriorityQueue<>();
-    static int[] parents;
+    static Subset[] subsets;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -54,9 +61,9 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
-        parents = new int[N + 1];
+        subsets = new Subset[N + 1];
         for (int i = 0; i <= N; i++) {
-            parents[i] = i;
+            subsets[i] = new Subset(i, 0);
         }
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
@@ -79,8 +86,8 @@ public class Main {
     }
 
     static int find(int v) {
-        if (parents[v] == v) return v;
-        return parents[v] = find(parents[v]);
+        if (subsets[v].parent == v) return v;
+        return subsets[v].parent = find(subsets[v].parent);
     }
 
     static boolean union(int v1, int v2) {
@@ -88,7 +95,9 @@ public class Main {
         int root2 = find(v2);
         if (root1 == root2) return false;
 
-        parents[root2] = v1;
+        if (subsets[root1].rank == subsets[root2].rank) subsets[root1].rank++;
+        if (subsets[root1].rank > subsets[root2].rank) subsets[root2].parent = root1;
+        else subsets[root1].parent = root2;
         return true;
     }
 }
