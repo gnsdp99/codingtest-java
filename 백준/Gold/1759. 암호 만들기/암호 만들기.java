@@ -25,7 +25,7 @@ import java.util.StringTokenizer;
  * @output
  * - 한 줄에 하나씩 사전순으로 가능한 암호를 모두 출력   
  * @time_complex O(C_C_L)  
- * @perf 
+ * @perf 12,196kb, 80ms
  */
 
 public class Main {
@@ -42,10 +42,10 @@ public class Main {
 		st = new StringTokenizer(br.readLine());
 		L = Integer.parseInt(st.nextToken());
 		C = Integer.parseInt(st.nextToken());
-		char[] input = br.readLine().toCharArray();
 		alphabets = new char[C];
+		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < C; i++) {
-			alphabets[i] = input[i * 2];
+			alphabets[i] = st.nextToken().charAt(0);
 		}
 		Arrays.sort(alphabets); // 사전식을 위한 정렬
 
