@@ -32,6 +32,7 @@ public class Main {
 
 	static int L, C;
 	static char[] alphabets;
+	static boolean[] isVow; 
 	static StringBuilder sb = new StringBuilder();
 	
 	public static void main(String[] args) throws IOException {
@@ -43,11 +44,14 @@ public class Main {
 		L = Integer.parseInt(st.nextToken());
 		C = Integer.parseInt(st.nextToken());
 		alphabets = new char[C];
+		isVow = new boolean[26];
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < C; i++) {
 			alphabets[i] = st.nextToken().charAt(0);
 		}
 		Arrays.sort(alphabets); // 사전식을 위한 정렬
+		
+		isVow['a' - 'a'] = isVow['e' - 'a'] = isVow['i' - 'a'] = isVow['o' - 'a'] = isVow['u' - 'a'] = true;
 
 		getCombination(0, 0, 0, new char[L]);
 		System.out.println(sb);
@@ -62,11 +66,7 @@ public class Main {
 		
 		for (int i = start; i < C; i++) {
 			password[kth] = alphabets[i];
-			getCombination(kth + 1, i + 1, isVow(alphabets[i]) ? numVow + 1 : numVow, password);
+			getCombination(kth + 1, i + 1, isVow[alphabets[i] - 'a'] ? numVow + 1 : numVow, password);
 		}
-	}
-	
-	static boolean isVow(char ch) {
-		return ch == 'a' || ch =='e' || ch == 'i' || ch == 'o' || ch == 'u';
 	}
 }
