@@ -71,10 +71,13 @@ public class Main {
 			return;
 		}
 		
+		if (subtracts[selectBit] > -1) return;
+		
 		int nonSelectBit = ~selectBit + (1 << (N + 1)) - 1; // 상대 선거구 비트
 		
 		if (isConnected(selectBit) && isConnected(nonSelectBit)) {
 			int sub = Math.abs(sumPops - (totalPops - sumPops));
+			subtracts[selectBit] = subtracts[nonSelectBit] = sub;
 			ans = ans > sub ? sub : ans;
 		}
 		
