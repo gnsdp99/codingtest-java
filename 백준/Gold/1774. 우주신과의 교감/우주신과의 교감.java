@@ -24,7 +24,7 @@ import java.util.StringTokenizer;
  *
  * 시간복잡도 O(E * logV), E = N^2, V = N >> O(N^2 * logN)
  *
- * 결과 42,320kb, 600ms
+ * 결과 36,880kb, 212ms
  *
  * */
 public class Main {
@@ -52,7 +52,6 @@ public class Main {
 
     static int N, M, numLinked;
     static PriorityQueue<Edge> edgePQ = new PriorityQueue<>(); // 간선 우선순위 큐
-    static boolean[][] adjMatrix; // 인접 행렬
     static Pos[] positions; // 우주신들의 좌표
     static int[] parents; // 서로소 집합에서 자신의 부모 저장
 
@@ -63,7 +62,6 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
-        adjMatrix = new boolean[N + 1][N + 1];
         positions = new Pos[N + 1];
         makeSet(); // make-set 연산
         for (int i = 1; i <= N; i++) {
@@ -76,8 +74,7 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int A = Integer.parseInt(st.nextToken());
             int B = Integer.parseInt(st.nextToken());
-            if (!adjMatrix[A][B] && union(A, B)) { // 중복 입력이 존재할 수 있음, 사이클을 만들면 안됨
-                adjMatrix[A][B] = adjMatrix[B][A] = true;
+            if (union(A, B)) { // 중복 입력이 존재할 수 있음, 사이클을 만들면 안됨
                 numLinked++;
             }
         }
@@ -85,7 +82,7 @@ public class Main {
         // 연결되지 않은 모든 간선 생성
         for (int i = 1; i <= N - 1; i++) {
             for (int j = i + 1; j <= N; j++) {
-                if (!adjMatrix[i][j]) {
+                if (find(i) != find(j)) {
                     edgePQ.offer(new Edge(i, j, getDist(positions[i], positions[j])));
                 }
             }
