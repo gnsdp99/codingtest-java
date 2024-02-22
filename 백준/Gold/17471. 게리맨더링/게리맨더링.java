@@ -71,14 +71,16 @@ public class Main {
 			return;
 		}
 		
-		if (subtracts[selectBit] > -1) return;
+		if (subtracts[selectBit] != -1) return; // 이미 계산한 경우면 종료
 		
 		int nonSelectBit = ~selectBit + (1 << (N + 1)) - 1; // 상대 선거구 비트
 		
-		if (isConnected(selectBit) && isConnected(nonSelectBit)) {
+		if (isConnected(selectBit) && isConnected(nonSelectBit)) { // 둘 다 연결된 경우만 계산
 			int sub = Math.abs(sumPops - (totalPops - sumPops));
 			subtracts[selectBit] = subtracts[nonSelectBit] = sub;
 			ans = ans > sub ? sub : ans;
+		} else {
+			subtracts[selectBit] = subtracts[nonSelectBit] = -2; // 계산 불가함을 저장
 		}
 		
 		for (int i = start; i <= N; i++) {
