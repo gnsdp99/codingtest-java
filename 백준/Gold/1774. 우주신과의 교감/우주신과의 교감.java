@@ -1,8 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 /**
@@ -12,6 +11,8 @@ import java.util.StringTokenizer;
  * - 입력으로 주어진 정보를 통해 트리를 만들고 이을 수 있는 간선 중 최소 비용을 구한다.
  * - 두 점 사이의 거리는 유클리드 거리?
  * - 주어진 간선 정보를 통해 하나의 집합을 이루도록 한다. (kruskal)
+ *
+ * #### M개의 입력 간선을 모두 연결하면 안되고 사이클이 생성되지 않고 중복이 없는 것만 연결해야 한다!
  *
  * 입력
  * - 우주신의 수 N [1, 1,000]
@@ -23,7 +24,7 @@ import java.util.StringTokenizer;
  *
  * 시간복잡도 O(E * logV), E = N^2, V = N >> O(N^2 * logN)
  *
- * 결과
+ * 결과 42,320kb, 600ms
  *
  * */
 public class Main {
@@ -50,7 +51,7 @@ public class Main {
     }
 
     static int N, M, numLinked;
-    static ArrayList<Edge> edges = new ArrayList<>(); // 간선 리스트
+    static PriorityQueue<Edge> edgePQ = new PriorityQueue<>(); // 간선 우선순위 큐
     static boolean[][] adjMatrix; // 인접 행렬
     static Pos[] positions; // 우주신들의 좌표
     static int[] parents; // 서로소 집합에서 자신의 부모 저장
@@ -85,17 +86,16 @@ public class Main {
         for (int i = 1; i <= N - 1; i++) {
             for (int j = i + 1; j <= N; j++) {
                 if (!adjMatrix[i][j]) {
-                    edges.add(new Edge(i, j, getDist(positions[i], positions[j])));
+                    edgePQ.offer(new Edge(i, j, getDist(positions[i], positions[j])));
                 }
             }
         }
 
-        Collections.sort(edges); // kruskal을 위해 가중치 오름차순으로 정렬
-
         // kruskal
         int cnt = 0; // 선택한 간선 수
         double cost = 0; // 선택한 간선 비용 합
-        for (Edge edge : edges) {
+        while (!edgePQ.isEmpty()) {
+            Edge edge = edgePQ.poll();
             if (cnt == N - 1 - numLinked) break; // N - 1개의 간선을 선택해야 하는데 이미 numLinked 개 선택됨
 
             if (union(edge.src, edge.dst)) { // 선택됨
