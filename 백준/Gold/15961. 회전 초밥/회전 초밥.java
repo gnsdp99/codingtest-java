@@ -24,7 +24,7 @@ import java.util.StringTokenizer;
  * - 먹을 수 있는 초밥 "가짓수"의 최댓값 출력
  * 
  * @time_complex  O(N)
- * @perf 
+ * @perf 168,676kb, 540ms
  */
 
 public class Main {
@@ -64,8 +64,6 @@ public class Main {
 		int left = 1, right = K;
 		int curKind = maxKind; 
 		while (left < N) {
-			if (right == N) right = 0; // 회전 
-			
 			numSelected[sushi[left - 1]]--; // 빠짐
 			if (numSelected[sushi[left++ - 1]] == 0) curKind--; // 빠진 초밥 종류가 이제 없음
 			
@@ -75,6 +73,7 @@ public class Main {
 			if (curKind >= maxKind) { // 최댓값 갱신
 				maxKind = numSelected[C] == 0 ? curKind + 1 : curKind;
 			}
+			right = right % N;
 		}
 		System.out.println(maxKind);
 	}
