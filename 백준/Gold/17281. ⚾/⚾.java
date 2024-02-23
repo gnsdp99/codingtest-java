@@ -11,6 +11,14 @@ import java.util.StringTokenizer;
  * - 1번 선수가 4번 타자인 채로 나머지 8명의 순서를 정해야 한다.
  * - 8!의 순열에 대해 최대 점수를 구해야 한다.
  * 
+ * 비트마스킹
+ * - 주자를 비트로 관리한다.
+ * - 현재 주자 비트를 1100라고 하면  2, 3루에 있는 것이다.
+ * - 이때 타자가 3루타를 치면 1000이 되어야 하고 2점을 획득한다.
+ * - (1100 + 1) << 3 = 1101000  -> 기존 주자에 타자를 태워 3칸 이동한다.
+ * - 점수 = (1101000 >> 4)의 비트 개수 = 2 -> 4번째 비트부터 획득한 점수이므로 4번째 비트 위로의 개수만 센다.
+ * - 바뀐 주자 = 1101000 % 16 = 1000
+ * 
  * @input 
  * - 이닝의 수 N [2, 50]
  * 
@@ -18,7 +26,7 @@ import java.util.StringTokenizer;
  * - 얻을 수 있는 최대 점수 출력
  * 
  * @time_complex  O(N * 8!)
- * @perf 
+ * @perf 60,272kb, 504ms
  */
 public class Main {
 
@@ -68,32 +76,21 @@ public class Main {
 		
 		for (int i = 1; i <= INNING; i++) {
 			int numOut = 0;
-			boolean[] base = new boolean[4]; // 1 ~ 3루 주자 여부 (이닝마다 초기화해야 함)
+			int base = 0; // 1 ~ 3루 주자 여부 (이닝마다 초기화해야 함)
 			
 			while (numOut < 3) {
 				int res = innings[i][sequence[curHitter]];
 				
 				if (res == 0) numOut++; // 아웃
-				else score += 주자이동(base, res);
+				else {
+					base = (base + 1) << res;
+					score += Integer.bitCount(base >> 4);
+					base = base % 16;
+				}
 				
 				curHitter = curHitter % 9 + 1;
 			}
 		}
 		ans = ans < score ? score : ans;
-	}
-	
-	static int 주자이동(boolean[] base, int res) {
-		// res: 타격 결과
-		int score = 0;
-		for (int i = 3; i >= 1; i--) { // 3루부터 이동
-			if (base[i]) {
-				if (i + res >= 4) score += 1; // 홈 인
-				else base[i + res] = true;
-				base[i] = false; // 주자 진루
-			}
-		}
-		if (res == 4) score += 1; // 홈런
-		else base[res] = true; // 타자 진루
-		return score;
 	}
 }
