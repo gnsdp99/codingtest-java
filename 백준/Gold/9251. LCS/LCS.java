@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 /**
  * 구현
@@ -16,7 +15,7 @@ import java.util.StringTokenizer;
  *
  * 시간복잡도 O(L^2)
  *
- * 결과
+ * 결과 15,760kb, 100ms
  *
  * */
 public class Main {
@@ -34,7 +33,9 @@ public class Main {
 
         for (int i = 1; i <= len1; i++) {
             for (int j = 1; j <= len2; j++) {
-                lcs[i][j] = string1[i - 1] == string2[j - 1] ? lcs[i - 1][j - 1] + 1 : lcs[i - 1][j] >= lcs[i][j - 1] ? lcs[i - 1][j] : lcs[i][j - 1];
+                if (string1[i - 1] == string2[j - 1]) lcs[i][j] = lcs[i - 1][j - 1] + 1;
+                else if (lcs[i - 1][j] >= lcs[i][j - 1]) lcs[i][j] = lcs[i - 1][j];
+                else lcs[i][j] = lcs[i][j - 1];
             }
         }
         System.out.println(lcs[len1][len2]);
