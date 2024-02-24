@@ -19,7 +19,7 @@ import java.util.StringTokenizer;
  *
  * 시간복잡도 O(N * K)
  *
- * 결과
+ * 결과 13,672kb, 156ms
  *
  * */
 public class Main {
@@ -35,7 +35,7 @@ public class Main {
         K = Integer.parseInt(st.nextToken());
         bag = new int[K + 1];
 
-        for (int i = 1; i <= N - 1; i++) {
+        for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
             W = Integer.parseInt(st.nextToken());
             V = Integer.parseInt(st.nextToken());
@@ -44,11 +44,6 @@ public class Main {
                 if (bag[k] < bag[k - W] + V) bag[k] = bag[k - W] + V;
             }
         }
-        st = new StringTokenizer(br.readLine());
-        W = Integer.parseInt(st.nextToken());
-        V = Integer.parseInt(st.nextToken());
-
-        if (K >= W && bag[K] < bag[K - W] + V) bag[K] = bag[K - W] + V;
 
         System.out.println(bag[K]);
     }
