@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
  * - 완전탐색 시 O(2^N)이 된다.
  * - 최소 O(N^2)으로 해결해야 함.
  * - D(i, j): 1 ~ i번 집을 칠할 때 i번째 집을 j 색으로 칠한 최소비용
+ * - 1차원 배열로는 이전 최적 해가 다음 최적 해를 보장할 수 없음.
  * 
  * @input
  * - 집의 수 [2, 1,000]
@@ -20,7 +21,7 @@ import java.util.StringTokenizer;
  * - 모든 집을 칠하는 비용의 최솟값 출력.
  *    
  * @time_complex  O(N)
- * @perf 
+ * @perf 12,128kb, 88ms
  */
 
 public class Main {
@@ -36,12 +37,7 @@ public class Main {
 		N = Integer.parseInt(br.readLine());
 		minCost = new int[N + 1][numColor];
 		
-		st = new StringTokenizer(br.readLine());
-		for (int j = 0; j < numColor; j++) { // 1번 집 먼저 처리
-			minCost[1][j] = Integer.parseInt(st.nextToken());
-		}
-		
-		for (int i = 2; i <= N; i++) {
+		for (int i = 1; i <= N; i++) {
 			st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < numColor; j++) {
 				int cost = Integer.parseInt(st.nextToken());
