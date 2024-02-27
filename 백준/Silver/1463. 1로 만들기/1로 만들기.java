@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 /**
  * @author 김예훈
@@ -19,7 +18,7 @@ import java.util.Arrays;
  * - 1을 만드는 연산의 최소 횟수 출력
  *    
  * @time_complex  O(N)
- * @perf 
+ * @perf 15,520kb, 100ms
  */
 
 public class Main {
@@ -39,8 +38,10 @@ public class Main {
 		
 		for (int i = 4; i <= N; i++) {
 			dp[i] = dp[i - 1];
-			if (i % 3 == 0 && dp[i] > dp[i / 3]) dp[i] = dp[i / 3];
-			if (i % 2 == 0 && dp[i] > dp[i >> 1]) dp[i] = dp[i >> 1];
+			int tmp = i / 3;
+			if (i % 3 == 0 && dp[i] > dp[tmp]) dp[i] = dp[tmp];
+			tmp = i >> 1;
+			if (i % 2 == 0 && dp[i] > dp[tmp]) dp[i] = dp[tmp];
 			dp[i]++;
 		}
 		System.out.println(dp[N]);
