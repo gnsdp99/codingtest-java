@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
  *
  * 시간복잡도 O(N^2 + M)
  *
- * 결과
+ * 결과 231,068kb, 708ms
  *
  * */
 public class Main {
@@ -35,13 +35,22 @@ public class Main {
 
         N = Integer.parseInt(br.readLine());
         seq = new int[N + 1];
+        palindrome = new boolean[N + 1][N + 1];
 
         st = new StringTokenizer(br.readLine());
         for (int i = 1; i <= N; i++) {
             seq[i] = Integer.parseInt(st.nextToken());
+            palindrome[i][i] = true;
+            if (seq[i - 1] == seq[i]) palindrome[i - 1][i] = true;
         }
 
-        setPalindrome();
+        for (int k = 3; k <= N; k++) {
+            for (int i = 1; i <= N - k + 1; i++) {
+                if (palindrome[i + 1][i + k - 2] && seq[i] == seq[i + k - 1]) {
+                    palindrome[i][i + k - 1] = true;
+                }
+            }
+        }
 
         M = Integer.parseInt(br.readLine());
         for (int i = 0; i < M; i++) {
@@ -51,20 +60,5 @@ public class Main {
             sb.append(palindrome[S][E] ? 1 : 0).append("\n");
         }
         System.out.println(sb);
-    }
-
-    static void setPalindrome() {
-        palindrome = new boolean[N + 1][N + 1];
-        for (int i = 1; i <= N; i++) {
-            palindrome[i][i] = true;
-            if (i < N && seq[i] == seq[i + 1]) palindrome[i][i + 1] = true;
-        }
-        for (int k = 3; k <= N; k++) {
-            for (int i = 1; i <= N - k + 1; i++) {
-                if (palindrome[i + 1][i + k - 2] && seq[i] == seq[i + k - 1]) {
-                    palindrome[i][i + k - 1] = true;
-                }
-            }
-        }
     }
 }
