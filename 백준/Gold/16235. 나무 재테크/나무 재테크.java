@@ -4,54 +4,47 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * 구현
- * - 관리할 대상: 나무, 나무의 나이, 각 땅의 (양분, 나무), 봄에 죽은 나무, 봄에 산 나무, 가을에 추가된 후 나무, SD2D의 양분 배열
- *
- * 입력
- * - 땅의 크기 N [1, 10]
- * - 초기 나무의 수 M [1, N^2=100]
- * - 몇 년 K [1, 1,000]
- * - S2D2가 추가할 각 땅의 양분 [1, 100]
- * - 초기 나무의 나이 [1, 10]
- *
- * 출력
- * - K년 후 살아남은 나무의 수 출력
- *
- * 시간복잡도 O(K * N^2)
- *
- * 결과
+ * 처음에는 우선순위 큐를 사용해서 나무를 관리하려 했는데, 봄에 양분을 먹는 나무나 가을에 새로 태어난 나무를 관리하려면 새로운 큐를 계속 생성해야 함. 그래서 시간과 메모리 복잡도가 증가함.
+ * 그래서 연결리스트로 좌표마다 나이별로 관리함.
+ * 같은 좌표에 나무가 추가될 때는 무조건 나이가 1인 나무가 추가되기 때문에 리스트의 맨 앞에 추가하면 자동으로 나이순으로 정렬됨.
  *
  * */
+
 public class Main {
-    static class Pos {
-        int x, y;
-        Pos(int x, int y) {
-            this.x = x;
-            this.y = y;
+
+    static class Tree {
+        int age, cnt;
+        Tree next, before;
+        Tree(int age, int cnt) {
+            this.age = age;
+            this.cnt = cnt;
         }
     }
 
-    static class Tree implements Comparable<Tree> {
-        Pos pos;
-        int age;
-
-        Tree(Pos pos, int age) {
-            this.pos = pos;
-            this.age = age;
+    static class TreeList {
+        Tree head;
+        TreeList() {
+            head = new Tree(0, 0);
         }
-        public int compareTo(Tree t) {
-            return Integer.compare(age, t.age);
+
+        void addFirst(Tree newTree) {
+            newTree.before = head;
+            if (head.next != null) {
+                newTree.next = head.next;
+                head.next.before = newTree;
+            }
+            head.next = newTree;
+        }
+        void remove(Tree dead) {
+            dead.before.next = null;
         }
     }
     static int N, M, K;
     static int[][] S2D2; // S2D2가 추가하는 양분
     static int[][] foods; // 현재 양분
-    static PriorityQueue<Tree> trees; // 나무
-    static Queue<Tree> dead; // 죽은 나무
-    static Queue<Tree> alive; // 산 나무
-    static Queue<Tree> newTree; // 새로 태어난 나무 및 원래 있던 나무
-    static Pos[] delta = {new Pos(-1, 0), new Pos(-1, 1), new Pos(0, 1), new Pos(1, 1)
-            , new Pos(1, 0), new Pos(1, -1), new Pos(0, -1), new Pos(-1, -1)};
+    static TreeList[][] trees;
+    static int[] deltaX = {-1, -1, 0, 1, 1, 1, 0, -1};
+    static int[] deltaY = {0, 1, 1, 1, 0, -1, -1, -1};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -65,10 +58,7 @@ public class Main {
         // 초기화
         S2D2 = new int[N + 1][N + 1];
         foods = new int[N + 1][N + 1];
-        trees = new PriorityQueue<>();
-        dead = new ArrayDeque<>();
-        alive = new ArrayDeque<>();
-        newTree = new ArrayDeque<>();
+        trees = new TreeList[N + 1][N + 1];
 
         for (int x = 1; x <= N; x++) {
             Arrays.fill(foods[x], 5);
@@ -78,70 +68,96 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for (int y = 1; y <= N; y++) {
                 S2D2[x][y] = Integer.parseInt(st.nextToken());
+                trees[x][y] = new TreeList();
             }
         }
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             int x = Integer.parseInt(st.nextToken());
             int y = Integer.parseInt(st.nextToken());
-            int z = Integer.parseInt(st.nextToken());
-            trees.offer(new Tree(new Pos(x, y), z));
+            int age = Integer.parseInt(st.nextToken());
+            trees[x][y].addFirst(new Tree(age, 1));
         }
 
         while (K-- > 0) {
-            spring();
-            summer();
+            springAndSummer();
             fall();
             winter();
         }
 
-        int ans = trees.size(); // 살아 있는 나무의 수
+        int ans = 0;
+        for (int x = 1; x <= N; x++) {
+            for (int y = 1; y <= N; y++) {
+                Tree cur = trees[x][y].head.next;
+                while (cur != null) {
+                    ans += cur.cnt;
+                    cur = cur.next;
+                }
+            }
+        }
         System.out.println(ans);
     }
 
-    static void spring() {
-        while (!trees.isEmpty()) {
-            Tree tree = trees.poll();
-            int x = tree.pos.x;
-            int y = tree.pos.y;
-            if (foods[x][y] >= tree.age) {
-                foods[x][y] -= tree.age++;
-                alive.offer(tree);
-            } else dead.offer(tree);
-        }
-        while (!alive.isEmpty()) {
-            trees.offer(alive.poll());
-        }
-    }
+    static void springAndSummer() {
+        for (int x = 1; x <= N; x++) {
+            for (int y = 1; y <= N; y++) {
+                Tree dead = null; // 이 나무 이후로 모두 죽음
+                boolean canAlive = true; // 생존 가능 여부
+                Tree cur = trees[x][y].head.next;
 
-    static void summer() {
-        while (!dead.isEmpty()) {
-            Tree tree = dead.poll();
-            int x = tree.pos.x;
-            int y = tree.pos.y;
-            int age = tree.age;
-            foods[x][y] += age / 2;
+                while (cur != null) {
+                    if (canAlive) {
+                        int sum = cur.age * cur.cnt;
+                        if (foods[x][y] > sum) { // 전부 먹음
+                            foods[x][y] -= sum;
+                            cur.age++;
+                        } else { // 죽음
+                            int num = foods[x][y] / cur.age;
+                            foods[x][y] -= cur.age * num;
+                            foods[x][y] += (cur.cnt - num) * (cur.age / 2);
+                            if (num > 0) { // 다 죽지는 않음
+                                cur.cnt = num;
+                                cur.age++;
+                                dead = cur.next;
+                            } else dead = cur;
+                            canAlive = false;
+                        }
+                    } else { // 다 죽음
+                        foods[x][y] += cur.cnt * (cur.age / 2);
+                    }
+                    cur = cur.next;
+                }
+
+                // 나무 죽음
+                if (dead != null) {
+                    trees[x][y].remove(dead);
+                }
+            }
         }
     }
 
     static void fall() {
-        while (!trees.isEmpty()) {
-            Tree tree = trees.poll();
-            int x = tree.pos.x;
-            int y = tree.pos.y;
-            if (tree.age % 5 == 0) {
-                for (int d = 0; d < delta.length; d++) {
-                    int nx = x + delta[d].x;
-                    int ny = y + delta[d].y;
-                    if (!isIn(nx, ny)) continue;
-                    newTree.offer(new Tree(new Pos(nx, ny), 1));
+        for (int x = 1; x <= N; x++) {
+            for (int y = 1; y <= N; y++) {
+                Tree cur = trees[x][y].head.next;
+                while (cur != null) {
+                    if (cur.age % 5 == 0) {
+                        for (int d = 0; d < deltaX.length; d++) {
+                            int nx = x + deltaX[d];
+                            int ny = y + deltaY[d];
+                            if (!isIn(nx, ny)) continue;
+                            // 새로운 나무는 무조건 나이가 1임
+                            Tree newCur = trees[nx][ny].head.next;
+                            if (newCur != null && newCur.age == 1) {
+                                newCur.cnt += cur.cnt;
+                            } else {
+                                trees[nx][ny].addFirst(new Tree(1, cur.cnt));
+                            }
+                        }
+                    }
+                    cur = cur.next;
                 }
             }
-            newTree.offer(tree);
-        }
-        while (!newTree.isEmpty()) {
-            Tree tree = newTree.poll();
-            trees.offer(tree);
         }
     }
 
