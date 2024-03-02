@@ -1,7 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 
 public class Main {
     static class Pos {
@@ -30,11 +35,8 @@ public class Main {
             // 이동 거리 두 배만큼 충전
             fuel += dist * 2;
         }
-        int[] findPassenger() {
+        boolean findPassenger() {
             // 최단 거리 -> 작은 행 -> 작은 열의 승객을 찾는다.
-            int minDist = MAX_DIST;
-            int minRow = MAX_ROW;
-            int minCol = MAX_COL;
             Queue<Pos> queue = new ArrayDeque<>();
             int[][] visited = new int[N + 1][N + 1]; // 택시 위치로부터의 거리를 의미
             for (int i = 1; i <= N; i++) {
@@ -43,22 +45,23 @@ public class Main {
             queue.offer(pos);
             visited[pos.x][pos.y] = 0;
 
+            int dist = MAX_DIST;
+            int row = MAX_ROW;
+            int col = MAX_COL;
             while (!queue.isEmpty()) {
                 Pos cur = queue.poll();
                 int x = cur.x;
                 int y = cur.y;
                 int key = N * x + y;
-                if (visited[x][y] > fuel) break; // 더 이상 탐색할 필요 없음
+                if (visited[x][y] > fuel || visited[x][y] > dist) break; // 더 이상 탐색할 필요 없음
 
                 if (passengers.get(key) != null) {
                     // 승객 찾음
-                    int dist = visited[x][y];
-                    if (dist < minDist
-                    || (dist == minDist && x < minRow)
-                    || (dist == minDist && x == minRow && y < minCol)) {
-                        minDist = dist;
-                        minRow = x;
-                        minCol = y;
+                    if (dist == MAX_DIST || x < row
+                    || (x == row && y < col)) {
+                        dist = visited[x][y];
+                        row = x;
+                        col = y;
                     }
                     if (dist == 0) break; // 가장 최단 거리를 찾음
                 }
@@ -71,30 +74,17 @@ public class Main {
                     queue.offer(new Pos(nx, ny));
                 }
             }
-            return minDist != MAX_DIST ? new int[]{minDist, minRow, minCol} : null;
-        }
-        boolean move() {
-            int[] passenger = findPassenger();
-            if (passenger == null) { // 이동 불가능
+            if (dist == MAX_DIST) { // 승객을 못찾음
                 return false;
             }
-            int dist = passenger[0];
-            int x = passenger[1];
-            int y = passenger[2];
 
             // 승객의 출발지로 이동
-            setPos(x, y);
+            setPos(row, col);
             useFuel(dist);
-
-            // 승객의 목적지로 이동
-            if (!moveToDst()) { // 이동 불가능
-                return false;
-            }
             return true;
         }
         boolean moveToDst() {
             // 승객을 목적지까지 이동시키는데 사용한 연료의 두 배 충전
-            int dist = 0;
             int sx = pos.x; // 출발 위치
             int sy = pos.y;
             int key = N * sx + sy;
@@ -110,6 +100,7 @@ public class Main {
             queue.offer(pos);
             visited[sx][sy] = 0;
 
+            int dist = 0;
             while (!queue.isEmpty()) {
                 Pos cur = queue.poll();
                 int x = cur.x;
@@ -183,7 +174,7 @@ public class Main {
         numPassenger = passengers.size();
 
         while (numPassenger > 0) {
-            if (!taxi.move()) { // 실패
+            if (!taxi.findPassenger() || !taxi.moveToDst()) { // 실패
                 System.out.println(-1);
                 return;
             }
