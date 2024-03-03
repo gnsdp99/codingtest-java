@@ -81,6 +81,7 @@ public class Main {
             {-1, -1}
     };
     static boolean[] isEven = {true, false, true, false, true, false, true, false};
+    static int[][] massSum; // 정답을 구할 때 연산을 줄이기 위한 질량 합 배열
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -90,9 +91,10 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
-        board = new FireBallList[N + 1][N + 1];
-        for (int r = 1; r <= N; r++) {
-            for (int c = 1; c <= N; c++) {
+        board = new FireBallList[N][N];
+        massSum = new int[N][N];
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
                 board[r][c] = new FireBallList();
             }
         }
@@ -103,32 +105,35 @@ public class Main {
             int m = Integer.parseInt(st.nextToken());
             int s = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
-            board[r][c].addFirst(new FireBall(m, s, d));
+            board[r - 1][c - 1].addFirst(new FireBall(m, s, d));
+            massSum[r - 1][c - 1] += m;
         }
 
         while (K-- > 0) {
             // 이동
-            for (int r = 1; r <= N; r++) {
-                for (int c = 1; c <= N; c++) {
-                    int size = board[r][c].size;
-                    if (size == 0) continue;
-
+            for (int r = 0; r < N; r++) {
+                for (int c = 0; c < N; c++) {
                     FireBall cur = board[r][c].head;
+                    if (cur == null) continue;
+
+                    int size = board[r][c].size;
                     for (int i = 0; i < size; i++) {
-                        int nr = (r - 1 + cur.s * delta[cur.d][0]) % N + 1; // 순환
-                        int nc = (c - 1 + cur.s * delta[cur.d][1]) % N + 1;
-                        if (nr <= 0) nr += N;
-                        if (nc <= 0) nc += N;
+                        int nr = (r + cur.s * delta[cur.d][0]) % N; // 순환
+                        int nc = (c + cur.s * delta[cur.d][1]) % N;
+                        if (nr < 0) nr += N;
+                        if (nc < 0) nc += N;
 
                         board[nr][nc].addLast(new FireBall(cur.m, cur.s, cur.d));
+                        massSum[nr][nc] += cur.m;
+                        massSum[r][c] -= cur.m;
                         cur = cur.next;
                         board[r][c].removeFirst();
                     }
                 }
             }
             // 이동 후
-            for (int r = 1; r <= N; r++) {
-                for (int c = 1; c <= N; c++) {
+            for (int r = 0; r < N; r++) {
+                for (int c = 0; c < N; c++) {
                     int mass = 0, speed = 0, cnt = 0;
                     boolean isAllSame = true;
                     FireBall cur = board[r][c].head;
@@ -147,6 +152,8 @@ public class Main {
                         else prev = isEven[cur.d];
                     }
                     board[r][c].removeAll(); // 파이어볼을 합친 후 기존 파이어볼 모두 삭제
+                    massSum[r][c] = 0;
+
                     mass = mass / 5;
                     if (mass == 0) continue; // 모두 사라짐
                     speed = speed / cnt;
@@ -156,18 +163,15 @@ public class Main {
                         board[r][c].addFirst(new FireBall(mass, speed, dir));
                         dir += 2;
                     }
+                    massSum[r][c] += mass * 4;
                 }
             }
         }
         // 남아있는 파이어볼 질량 합
         int ans = 0;
-        for (int r = 1; r <= N; r++) {
-            for (int c = 1; c <= N; c++) {
-                FireBall cur = board[r][c].head;
-                if (cur == null) continue;
-                for (; cur != null; cur = cur.next) {
-                    ans += cur.m;
-                }
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
+                ans += massSum[r][c];
             }
         }
         System.out.println(ans);
