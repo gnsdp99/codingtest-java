@@ -10,6 +10,7 @@ public class Main {
     static class Node implements Comparable<Node> {
         int r, c, dist;
 
+        Node(){}
         Node(int r, int c, int dist) {
             this.r = r;
             this.c = c;
@@ -27,6 +28,8 @@ public class Main {
     static int[][] dists;
     static int[][] delta = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     static final int INF = Integer.MAX_VALUE;
+    static Node[] nodes = new Node[15_630];
+    static int idx = 0;
 
     public static void main(String[] args) throws IOException {
 
@@ -36,7 +39,7 @@ public class Main {
 
         int tc = 1;
         while (true) {
-
+            idx = 0;
             N = Integer.parseInt(br.readLine());
             if (N == 0) {
                 break;
@@ -65,7 +68,7 @@ public class Main {
     static void dijkstra() {
 
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
-        priorityQueue.offer(new Node(1, 1, dists[1][1]));
+        priorityQueue.offer(getNode(1, 1, dists[1][1]));
 
         while (!priorityQueue.isEmpty()) {
             Node node = priorityQueue.poll();
@@ -84,10 +87,20 @@ public class Main {
                 if (isIn(nr, nc)
                 && dists[r][c] + board[nr][nc] < dists[nr][nc]) {
                     dists[nr][nc] = dists[r][c] + board[nr][nc];
-                    priorityQueue.offer(new Node(nr, nc, dists[nr][nc]));
+                    priorityQueue.offer(getNode(nr, nc, dists[nr][nc]));
                 }
             }
         }
+    }
+
+    static Node getNode(int r, int c, int d) {
+        if (nodes[idx] == null) nodes[idx] = new Node();
+
+        Node node = nodes[idx++];
+        node.r = r;
+        node.c = c;
+        node.dist = d;
+        return node;
     }
 
     static boolean isIn(int r, int c) {
