@@ -3,48 +3,43 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-/**
- * 구현
- * - 0-1 knapsack 문제
- * - 1차원 배열의 dp로 해결
- *
- * 입력
- * - 물건의 수 N [1, 100]
- * - 최대 무게 K [1, 100,000]
- * - 각 물건의 무게 W [1, 100,000]
- * - 각 물건의 가치 V [0, 1,000]
- *
- * 출력
- * - 넣을 수 있는 물건 가치 합의 최댓값을 출력
- *
- * 시간복잡도 O(N * K)
- *
- * 결과 13,672kb, 156ms
- *
- * */
 public class Main {
-    static int N, K, W, V;
-    static int[] bag;
+
+    static class Item {
+        int weight, value;
+
+        Item(int weight, int value) {
+            this.weight = weight;
+            this.value = value;
+        }
+    }
 
     public static void main(String[] args) throws IOException {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        K = Integer.parseInt(st.nextToken());
-        bag = new int[K + 1];
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+
+        Item[] items = new Item[N + 1];
+        int[] knapsack = new int[K + 1];
 
         for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
-            W = Integer.parseInt(st.nextToken());
-            V = Integer.parseInt(st.nextToken());
-
-            for (int k = K; k >= W; k--) {
-                if (bag[k] < bag[k - W] + V) bag[k] = bag[k - W] + V;
-            }
+            int W = Integer.parseInt(st.nextToken());
+            int V = Integer.parseInt(st.nextToken());
+            items[i] = new Item(W, V);
         }
 
-        System.out.println(bag[K]);
+        for (int i = 1; i <= N; i++) {
+            for (int w = K; w >= items[i].weight; w--) {
+                if (knapsack[w] < knapsack[w - items[i].weight] + items[i].value) {
+                    knapsack[w] = knapsack[w - items[i].weight] + items[i].value;
+                }
+            }
+        }
+        System.out.println(knapsack[K]);
     }
 }
