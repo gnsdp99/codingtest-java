@@ -15,7 +15,7 @@ public class Main {
         }
     }
 
-    static int N, M, ans = Integer.MAX_VALUE;
+    static int N, M;
     static char[][] maze;
     static int[][][] visited;
     static int[][] delta = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
@@ -54,12 +54,11 @@ public class Main {
             }
         }
 
-        BFS(sr, sc);
-
-        System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
+        int ans = BFS(sr, sc);
+        System.out.println(ans);
     }
 
-    static void BFS(int sr, int sc) {
+    static int BFS(int sr, int sc) {
 
         Queue<Pos> queue = new ArrayDeque<>();
         int key = 0;
@@ -72,8 +71,8 @@ public class Main {
             int c = pos.c;
             int k = pos.key;
 
-            if (maze[r][c] == '1' && visited[r][c][k] < ans) {
-                ans = visited[r][c][k];
+            if (maze[r][c] == '1') {
+                return visited[r][c][k];
             }
 
             for (int d = 0; d < 4; d++) {
@@ -98,6 +97,7 @@ public class Main {
                 queue.offer(new Pos(nr, nc, tmp));
             }
         }
+        return -1;
     }
 
     static boolean isIn(int r, int c) {
