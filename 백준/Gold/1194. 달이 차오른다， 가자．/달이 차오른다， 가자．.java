@@ -1,7 +1,10 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
 
@@ -89,11 +92,7 @@ public class Main {
                     tmp |= (1 << (maze[nr][nc] - 'a'));
                 }
 
-                if (k != tmp) {
-                    visited[nr][nc][tmp] = visited[r][c][k] + 1;
-                } else {
-                    visited[nr][nc][tmp] = visited[r][c][tmp] + 1;
-                }
+                visited[nr][nc][tmp] = k != tmp ? visited[r][c][k] + 1 : visited[r][c][tmp] + 1;
                 queue.offer(new Pos(nr, nc, tmp));
             }
         }
