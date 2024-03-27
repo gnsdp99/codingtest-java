@@ -44,12 +44,8 @@ public class Main {
                     int bit = (1 << sdoku[i][j]);
                     bitString[i] |= bit;
                     bitString[9 + j] |= bit;
-                    int num = findRoot(i, j);
-                    int tmp = num / 9;
-                    int idx = tmp;
-                    tmp = num % 9 / 3;
-                    idx += tmp;
-                    bitString[18 + idx] |= bit;
+                    int square = (i / 3) * 3 + (j / 3);
+                    bitString[18 + square] |= bit;
                 }
             }
         }
@@ -74,55 +70,37 @@ public class Main {
         int r = pos.r;
         int c = pos.c;
 
-        int num = findRoot(r, c);
-        int tmp = num / 9;
-        int idx = tmp;
-        tmp = num % 9 / 3;
-        idx += tmp;
+        int square = (r / 3) * 3 + (c / 3);
 
         for (int i = 1; i <= 9; i++) {
             int bit = 1 << i;
             if (((bitString[r] & bit) != 0)
             || ((bitString[9 + c] & bit) != 0)
-            || ((bitString[18 + idx] & bit) != 0)) {
+            || ((bitString[18 + square] & bit) != 0)) {
                 continue;
             }
 
-            set(r, c, i, idx, bit);
+            set(r, c, square, bit, i);
             if (backtracking(kth + 1)) {
                 return true;
             }
-            unset(r, c, i, idx, bit);
+            unset(r, c, square, bit);
         }
         return false;
     }
 
-    static void set(int r, int c, int num, int idx, int bit) {
+    static void set(int r, int c, int square, int bit, int num) {
         bitString[r] |= bit;
         bitString[9 + c] |= bit;
-        bitString[18 + idx] |= bit;
+        bitString[18 + square] |= bit;
         sdoku[r][c] = num;
     }
 
-    static void unset(int r, int c, int num, int idx, int bit) {
+    static void unset(int r, int c, int square, int bit) {
         bitString[r] &= ~bit;
         bitString[9 + c] &= ~bit;
-        bitString[18 + idx] &= ~bit;
+        bitString[18 + square] &= ~bit;
         sdoku[r][c] = 0;
-    }
-
-    static int findRoot(int r, int c) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int nr = r - i;
-                int nc = c - j;
-                int num = 9 * nr + nc;
-                if (isIn(nr, nc) && root.containsKey(num)) {
-                    return num;
-                }
-            }
-        }
-        return -1;
     }
 
     static boolean isIn(int r, int c) {
