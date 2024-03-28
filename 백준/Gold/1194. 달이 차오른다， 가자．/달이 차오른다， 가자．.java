@@ -2,25 +2,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
 
     static class Pos {
-        int r, c, key;
+        int r, c, key, dist;
 
-        Pos(int r, int c, int key) {
+        Pos(int r, int c, int key, int dist) {
             this.r = r;
             this.c = c;
             this.key = key;
+            this.dist = dist;
         }
     }
 
     static int N, M;
     static char[][] maze;
-    static int[][][] visited;
+    static boolean[][][] visited;
     static int[][] delta = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     public static void main(String[] args) throws IOException {
@@ -50,12 +50,7 @@ public class Main {
             }
         }
 
-        visited = new int[N][M][64];
-        for (int r = 0; r < N; r++) {
-            for (int c = 0; c < M; c++) {
-                Arrays.fill(visited[r][c], -1);
-            }
-        }
+        visited = new boolean[N][M][64];
 
         int ans = BFS(sr, sc);
         System.out.println(ans);
@@ -65,17 +60,18 @@ public class Main {
 
         Queue<Pos> queue = new ArrayDeque<>();
         int key = 0;
-        queue.offer(new Pos(sr, sc, key));
-        visited[sr][sc][key] = 0;
+        queue.offer(new Pos(sr, sc, key, 0));
+        visited[sr][sc][key] = true;
 
         while (!queue.isEmpty()) {
             Pos pos = queue.poll();
             int r = pos.r;
             int c = pos.c;
             int k = pos.key;
+            int dist = pos.dist;
 
             if (maze[r][c] == '1') {
-                return visited[r][c][k];
+                return dist;
             }
 
             for (int d = 0; d < 4; d++) {
@@ -83,7 +79,7 @@ public class Main {
                 int nc = c + delta[d][1];
 
                 if (!isIn(nr, nc)) continue;
-                if (visited[nr][nc][k] > -1) continue;
+                if (visited[nr][nc][k]) continue;
                 if (maze[nr][nc] == '#') continue;
                 if ('A' <= maze[nr][nc] && maze[nr][nc] <= 'F' && (k & (1 << (maze[nr][nc] - 'A'))) == 0) continue;
 
@@ -92,8 +88,8 @@ public class Main {
                     tmp |= (1 << (maze[nr][nc] - 'a'));
                 }
 
-                visited[nr][nc][tmp] = k != tmp ? visited[r][c][k] + 1 : visited[r][c][tmp] + 1;
-                queue.offer(new Pos(nr, nc, tmp));
+                visited[nr][nc][tmp] = true;
+                queue.offer(new Pos(nr, nc, tmp, dist + 1));
             }
         }
         return -1;
