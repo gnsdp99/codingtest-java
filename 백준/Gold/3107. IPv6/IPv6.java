@@ -42,21 +42,27 @@ public class Main {
             next = 8;
         }
 
-        StringBuilder sb = new StringBuilder();
+        if (start < 8) {
 
-        int i = 0;
-        for (;i < start; i++) {
-            sb.append(ipv6[i]).append(":");
+            StringBuilder sb = new StringBuilder();
+
+            int i = 0;
+            for (;i < start; i++) {
+                sb.append(ipv6[i]).append(":");
+            }
+            for (int j = 0; j < 8 - cnt; j++) {
+                sb.append("0000:");
+            }
+            for (i = next; i < len; i++) {
+                sb.append(ipv6[i]).append(":");
+            }
+            if (sb.charAt(sb.length() - 1) == ':') {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            System.out.println(sb);
+
+        } else {
+            System.out.println(String.join(":", ipv6));
         }
-        for (int j = 0; j < 8 - cnt; j++) {
-            sb.append("0000:");
-        }
-        for (i = next; i < len; i++) {
-            sb.append(ipv6[i]).append(":");
-        }
-        if (sb.charAt(sb.length() - 1) == ':') {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        System.out.println(sb);
     }
 }
