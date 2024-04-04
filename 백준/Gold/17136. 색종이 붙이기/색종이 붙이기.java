@@ -48,7 +48,7 @@ public class Main {
 
     static void backtracking(int r, int c, int cnt) {
 
-        if (num == 0) {
+        if (num == 0 || (r == N - 1 && c == N)) {
             if (ans > cnt) {
                 ans = cnt;
             }
@@ -60,8 +60,8 @@ public class Main {
         }
 
         if (c >= N) {
-            backtracking(r + 1, 0, cnt);
-            return;
+            ++r;
+            c = 0;
         }
 
         if (board[r][c]) {
