@@ -1,7 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -27,28 +28,28 @@ public class Main {
 
         int N = Integer.parseInt(br.readLine());
 
-        Line[] lines = new Line[N];
+        ArrayList<Line> lines = new ArrayList<>();
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             int s = Integer.parseInt(st.nextToken());
             int e = Integer.parseInt(st.nextToken());
-            lines[i] = new Line(s, e);
+            lines.add(new Line(s, e));
         }
-        Arrays.sort(lines);
+        Collections.sort(lines);
 
         int ans = 0;
 
-        int start = lines[0].start;
-        int end = lines[0].end;
+        int start = lines.get(0).start;
+        int end = lines.get(0).end;
 
         for (int i = 1; i < N; i++) {
-            if (end < lines[i].start) {
+            if (end < lines.get(i).start) {
                 ans += (end - start);
-                start = lines[i].start;
+                start = lines.get(i).start;
             }
-            if (end < lines[i].end) {
-                end = lines[i].end;
+            if (end < lines.get(i).end) {
+                end = lines.get(i).end;
             }
         }
         ans += (end - start);
