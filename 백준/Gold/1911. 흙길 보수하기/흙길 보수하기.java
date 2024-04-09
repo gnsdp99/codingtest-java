@@ -46,11 +46,17 @@ public class Main {
             Hole hole = list.get(i);
             if (cur < hole.start) {
                 cur = hole.start - 1;
+            } else if (cur >= hole.end) {
+                continue;
             }
-            while (cur < hole.end) {
-                cur += L;
-                ++ans;
+            int cnt = 0;
+            if (hole.end - cur >= L) {
+                cnt = (hole.end - cur) % L == 0 ? (hole.end - cur) / L : (hole.end - cur) / L + 1;
+            } else {
+                cnt = 1;
             }
+            ans += cnt;
+            cur += cnt * L;
         }
         System.out.println(ans);
     }
