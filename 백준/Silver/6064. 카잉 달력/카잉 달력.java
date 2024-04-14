@@ -20,35 +20,37 @@ public class Main {
             int x = Integer.parseInt(st.nextToken());
             int y = Integer.parseInt(st.nextToken());
 
+            if (x == y) {
+                sb.append(x).append("\n");
+                continue;
+            } else if (M == N) {
+                sb.append(-1).append("\n");
+                continue;
+            }
+
             int minMN = M > N ? N : M;
             int maxMN = minMN == N ? M : N;
             int minXY = M > N ? y : x;
             int maxXY = minXY == y ? x : y;
 
-            if (x == y) {
-                sb.append(x).append("\n");
-            } else if (M == N) {
-                sb.append(-1).append("\n");
+            if (M == x && N == y) {
+                sb.append(lcm(minXY, maxXY)).append("\n");
             } else {
-                if (M == x && N == y) {
-                    sb.append(lcm(minXY, maxXY)).append("\n");
-                } else {
-                    int cur = minXY;
-                    boolean isPossible = false;
-                    for (int i = 1; i <= maxMN; i++) {
-                        cur = (cur + minMN) % maxMN;
-                        if (cur == 0) {
-                            cur = maxMN;
-                        }
-                        if (cur == maxXY) {
-                            sb.append(i * minMN + minXY).append("\n");
-                            isPossible = true;
-                            break;
-                        }
+                int cur = minXY;
+                boolean isPossible = false;
+                for (int i = 1; i <= maxMN; i++) {
+                    cur = (cur + minMN) % maxMN;
+                    if (cur == 0) {
+                        cur = maxMN;
                     }
-                    if (!isPossible) {
-                        sb.append(-1).append("\n");
+                    if (cur == maxXY) {
+                        sb.append(i * minMN + minXY).append("\n");
+                        isPossible = true;
+                        break;
                     }
+                }
+                if (!isPossible) {
+                    sb.append(-1).append("\n");
                 }
             }
         }
@@ -57,18 +59,12 @@ public class Main {
 
     static int lcm(int small, int big) {
 
-        if (small == big) {
-            return small;
-        } else if (big % small == 0) {
+        if (big % small == 0) {
             return big;
         }
 
         int com = findCommon(small, big);
-        if (com != -1) {
-            return com * (small / com) * (big / com);
-        } else {
-            return small * big;
-        }
+        return com != -1 ? com * (small / com) * (big / com) : small * big;
     }
 
     static int findCommon(int small, int big) {
