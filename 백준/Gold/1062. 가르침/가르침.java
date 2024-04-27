@@ -6,8 +6,8 @@ import java.util.*;
 public class Main {
 
     static int N, K, ans;
-    static List<Set<Character>> words = new ArrayList<>();
-    static boolean[] known = new boolean[26];
+    static List<Integer> wordsBit = new ArrayList<>();
+    static int known = 0;
 
     public static void main(String[] args) throws IOException {
 
@@ -16,44 +16,41 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
+        String init = "acint";
+        for (int i = 0; i < init.length(); i++) {
+            known |= (1 << (init.charAt(i) - 'a'));
+        }
+
         for (int i = 0; i < N; i++) {
             String word = br.readLine();
-            Set<Character> set = new HashSet<>();
-            for (int j = 0; j < word.length(); j++) {
-                set.add(word.charAt(j));
+            int bit = known;
+            for (int j = 4; j < word.length() - 4; j++) {
+                char ch = word.charAt(j);
+                bit |= (1 << (ch - 'a'));
             }
-            words.add(set);
+            wordsBit.add(bit);
         }
 
         if (K < 5) {
             System.out.println(0);
             return;
+        } else if (K == 26) {
+            System.out.println(N);
+            return;
         }
 
         K -= 5;
-        known['a' - 'a'] = true;
-        known['c' - 'a'] = true;
-        known['i' - 'a'] = true;
-        known['n' - 'a'] = true;
-        known['t' - 'a'] = true;
 
-        backtracking(0, 1);
+        backtracking(0, 0, known);
         System.out.println(ans);
     }
 
-    static void backtracking(int kth, int start) {
+    static void backtracking(int depth, int start, int known) {
 
-        if (kth == K) {
+        if (depth == K) {
             int cnt = 0;
-            for (int i = 0; i < N; i++) {
-                boolean can = true;
-                for (char ch : words.get(i)) {
-                    if (!known[ch - 'a']) {
-                        can = false;
-                        break;
-                    }
-                }
-                if (can) {
+            for (int bit : wordsBit) {
+                if ((known | bit) == known) {
                     ++cnt;
                 }
             }
@@ -64,12 +61,10 @@ public class Main {
         }
 
         for (int i = start; i < 26; i++) {
-            if (known[i]) {
+            if ((known & (1 << i)) != 0) {
                 continue;
             }
-            known[i] = true;
-            backtracking(kth + 1, i + 1);
-            known[i] = false;
+            backtracking(depth + 1, i + 1, known | (1 << i));
         }
     }
 }
