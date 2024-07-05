@@ -5,8 +5,20 @@ import java.util.StringTokenizer;
 
 public class Main {
 
+    static class Node {
+        int idx;
+        int val;
+        Node next;
+        Node prev;
+        Node (int idx, int val, Node next, Node prev) {
+            this.idx = idx;
+            this.val = val;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
     static int N;
-    static int[] arr;
 
     public static void main(String[] args) throws IOException {
 
@@ -15,39 +27,43 @@ public class Main {
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
-        arr = new int[N];
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-        }
 
-        int totalRemove = 1;
-        int curRemove = 0;
-        sb.append(curRemove + 1).append(" ");
-        while (totalRemove < N) {
-            int count = arr[curRemove];
-            arr[curRemove] = 0;
+        Node head = null;
+        Node cur = null;
+        for (int i = 1; i <= N; i++) {
+            Node node = new Node(i, Integer.parseInt(st.nextToken()), null, null);
+            if (cur == null) {
+                head = cur = node;
+            } else {
+                cur.next = node;
+                node.prev = cur;
+                cur = cur.next;
+            }
+        }
+        head.prev = cur;
+
+        int count = 0;
+        while (head.next != head) {
             while (count < 0) {
-                --curRemove;
-                if (curRemove < 0) {
-                    curRemove = N - 1;
-                }
-                if (arr[curRemove] != 0) {
-                    ++count;
-                }
+                head = head.prev;
+                ++count;
             }
             while (count > 0) {
-                ++curRemove;
-                if (curRemove >= N) {
-                    curRemove %= N;
-                }
-                if (arr[curRemove] != 0) {
-                    --count;
-                }
+                head = head.next;
+                --count;
             }
-            ++totalRemove;
-            sb.append(curRemove + 1).append(" ");
+            sb.append(head.idx).append(" ");
+            head.prev.next = head.next;
+            head.next.prev = head.prev;
+            if (head.val > 0) {
+                count = head.val - 1;
+            } else {
+                count = head.val;
+            }
+            head = head.next;
         }
+        sb.append(head.idx).append(" ");
         System.out.println(sb);
     }
 }
