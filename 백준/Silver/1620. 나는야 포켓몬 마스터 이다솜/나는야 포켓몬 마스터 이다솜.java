@@ -4,96 +4,86 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-    static final int MAX_TABLE = 100_003;
-    static final int MAX = 100_000;
 
-    static class Pocketmon {
-        int idx;
+    static class Node {
         String name;
-        Pocketmon next;
+        int idx;
+        Node next;
+
+        Node(String name, int idx, Node next) {
+            this.name = name;
+            this.idx = idx;
+            this.next = next;
+        }
     }
 
-    static Pocketmon[] hashTable = new Pocketmon[MAX_TABLE]; // 문자열을 숫자로 저장
-    static Pocketmon[] pool;
-    static int pIdx = 0;
-    static String[] names; // 숫자를 문자열로 저장
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
-
-        st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        pool = new Pocketmon[MAX + 100];
-        names = new String[MAX + 100];
-
-        init();
-        for (int i = 1; i <= N; i++) {
-            String name = br.readLine();
-            int hash = hash(name);
-            Pocketmon node = pool[pIdx++];
-            node.idx = i;
-            node.name = name;
-            node.next = hashTable[hash];
-            hashTable[hash] = node;
-
-            names[i] = name;
+    static class HashTable {
+        Node[] table;
+        HashTable(int size) {
+            this.table = new Node[size];
+        }
+        int hash(String name) {
+            int hash = 5381;
+            for (int i = 0; i < name.length(); i++) {
+                hash = (((hash << 5) + hash) + name.charAt(i)) % table.length;
+            }
+            return hash % table.length;
         }
 
-        for (int i = 0; i < M; i++) {
-            String name = br.readLine();
-            int idx = 0;
-            char c = name.charAt(0);
-            if ('0' < c && c <= '9') {
-                idx = Integer.parseInt(name);
+        void put(String name, int idx) {
+            int hash = hash(name);
+            if (table[hash] == null) {
+                table[hash] = new Node(name, idx, null);;
+                return;
             }
-            if (idx == 0) {
-                int hash = hash(name);
-                Pocketmon node = hashTable[hash];
-                while (node != null && !node.name.equals(name)) {
-                    node = node.next;
+            Node node = new Node(name, idx, table[hash].next);
+            table[hash].next = node;
+        }
+
+        int getIndex(String name) {
+            int hash = hash(name);
+            Node cur = table[hash];
+            while (cur != null) {
+                if (cur.name.equals(name)) {
+                    return cur.idx;
                 }
-                sb.append(node.idx);
+                cur = cur.next;
+            }
+            return -1;
+        }
+    }
+
+    static int N, M;
+    static final int MAX_SIZE = 10007;
+    static HashTable hashTable = new HashTable(MAX_SIZE);
+    static String[] nameArr;
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        StringBuilder sb = new StringBuilder();
+
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        nameArr = new String[N + 1];
+        for (int i = 1; i <= N; i++) {
+            String name = br.readLine();
+            nameArr[i] = name;
+            hashTable.put(name, i);
+        }
+        for (int i = 0; i < M; i++) {
+            String input = br.readLine();
+            char firstCh = input.charAt(0);
+            if ('1' <= firstCh && firstCh <= '9') {
+                sb.append(nameArr[Integer.parseInt(input)]);
             } else {
-                sb.append(names[idx]);
+                sb.append(hashTable.getIndex(input));
             }
             sb.append("\n");
         }
+
         System.out.println(sb);
-    }
-
-    public static void init() {
-        pIdx = 0;
-        for (int i = 0; i < pool.length; i++) {
-            pool[i] = new Pocketmon();
-        }
-    }
-
-
-    public static int hash(String str) {
-        int hash = 5381;
-        for (int i = 0; i < str.length(); i++) {
-            int c = str.charAt(i);
-            hash = ((hash << 5) + hash + c) % MAX_TABLE;
-        }
-        return hash % MAX_TABLE;
-    }
-
-    public static int findMax(int N) {
-        for (int i = 100_000; i <= 200_000; i++) {
-            boolean isPrime = true;
-            for (int j = 2; j * j <= i; j++) {
-                if (i % j == 0) {
-                    isPrime = false;
-                    break;
-                }
-            }
-            if (isPrime) {
-                return i;
-            }
-        }
-        return 0;
     }
 }
