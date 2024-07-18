@@ -26,25 +26,21 @@ public class Main {
         for (int i = 0; i < N; i++) {
             int left = 0;
             int right = N - 1;
-            while (true) {
-                if (i == left) {
-                    ++left;
-                } else if (i == right) {
-                    --right;
-                }
-
-                if (left >= right) {
-                    break;
-                }
-
+            while (left < right) {
                 int sum = numbers[left] + numbers[right];
                 if (sum > numbers[i]) {
                     --right;
                 } else if (sum < numbers[i]) {
                     ++left;
                 } else {
-                    ++ans;
-                    break;
+                    if (i != left && i != right) { // 하나가 0이고 하나가 자기 자신이면 안됨
+                        ++ans;
+                        break;
+                    } else if (i == left) { // 음수끼리 더하면 더 작은 음수가 될 수 있음
+                        ++left;
+                    } else {
+                        --right;
+                    }
                 }
             }
         }
