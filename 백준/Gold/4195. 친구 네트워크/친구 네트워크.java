@@ -40,8 +40,8 @@ public class Main {
                 if (!stringIntegerMap.containsKey(B)) {
                     stringIntegerMap.put(B, count++);
                 }
-                union(stringIntegerMap.get(A), stringIntegerMap.get(B));
-                sb.append(rank[parent[stringIntegerMap.get(A)]]).append("\n");
+                int result = union(stringIntegerMap.get(A), stringIntegerMap.get(B));
+                sb.append(result).append("\n");
             }
         }
         System.out.println(sb);
@@ -54,15 +54,22 @@ public class Main {
         return parent[a] = find(parent[a]);
     }
 
-    static void union(int a, int b) {
+    static int union(int a, int b) {
         int pa = find(a);
         int pb = find(b);
 
         if (pa == pb) {
-            return;
+            return rank[pa];
         }
 
-        parent[pb] = pa;
-        rank[pa] += rank[pb];
+        if (rank[pa] >= rank[pb]) {
+            parent[pb] = pa;
+            rank[pa] += rank[pb];
+            return rank[pa];
+        } else {
+            parent[pa] = pb;
+            rank[pb] += rank[pa];
+            return rank[pb];
+        }
     }
 }
