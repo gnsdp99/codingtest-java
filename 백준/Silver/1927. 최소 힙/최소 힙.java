@@ -1,16 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class Main {
 
     static class MinHeap {
         int[] heap = new int[100_010];
         int size = 0;
-        MinHeap() {
-            Arrays.fill(heap, -1);
-        }
         void insert(int x) {
             int idx = ++size;
             int pIdx = idx >> 1;
@@ -27,8 +23,7 @@ public class Main {
             }
 
             int result = heap[1];
-            int tmp = heap[size];
-            heap[size--] = -1;
+            int tmp = heap[size--];
 
             int idx = 1;
             int cIdx = 2;
