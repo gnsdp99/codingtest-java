@@ -21,9 +21,7 @@ public class Main {
         void insert(int x) {
             int idx = ++size;
             int pIdx = idx >> 1;
-            while (idx > 1 &&
-            (Math.abs(x) < heap[pIdx].absNum ||
-            (Math.abs(x) == heap[pIdx].absNum && x < heap[pIdx].num))) {
+            while (idx > 1 && isSatisfied(Math.abs(x), x, heap[pIdx].absNum, heap[pIdx].num)) {
                 heap[idx] = heap[pIdx];
                 idx = pIdx;
                 pIdx = pIdx >> 1;
@@ -40,12 +38,10 @@ public class Main {
             int idx = 1;
             int cIdx = idx << 1;
             while (cIdx <= size) {
-                if (cIdx < size && heap[cIdx].absNum > heap[cIdx + 1].absNum ||
-                (heap[cIdx].absNum == heap[cIdx + 1].absNum && heap[cIdx].num > heap[cIdx + 1].num)) {
+                if (isSatisfied(heap[cIdx + 1].absNum, heap[cIdx + 1].num, heap[cIdx].absNum, heap[cIdx].num)) {
                     ++cIdx;
                 }
-                if (heap[cIdx].absNum > target.absNum ||
-                (heap[cIdx].absNum == target.absNum && heap[cIdx].num > target.num)) {
+                if (isSatisfied(target.absNum, target.num, heap[cIdx].absNum, heap[cIdx].num)) {
                     break;
                 }
                 heap[idx] = heap[cIdx];
@@ -54,6 +50,11 @@ public class Main {
             }
             heap[idx] = target;
             return result;
+        }
+
+        boolean isSatisfied(int smallAbsNum, int smallNum, int bigAbsNum, int bigNum) {
+            return smallAbsNum < bigAbsNum ||
+                    (smallAbsNum == bigAbsNum && smallNum < bigNum);
         }
     }
 
