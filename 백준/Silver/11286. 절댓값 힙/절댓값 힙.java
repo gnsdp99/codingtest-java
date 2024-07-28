@@ -1,54 +1,77 @@
+// 백준 11286. 절댓값 힙 (S1)
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
-/**
- * @author 김예훈
- * @date 24/02/07
- * @link https://www.acmicpc.net/problem/11286
- * @keyword_solution  
- * 문제 요약
- * - 절댓값 힙이라는 자료구조를 구현한다.
- * 1. 배열에 정수 x(x != 0)을 넣는다.
- * 2. 배열에서 절댓값이 가장 작은 값을 출력하고, 배열에서 제거한다.
- * 절댓값이 가장 작은 값이 여러개일 때는 실제 값이 작은 값을 출력하고 제거한다.
- * 
- * 구현
- * - 우선순위 큐의 정렬 기준을 절댓값으로 한다. 같은 경우 실제 값을 비교한다.
- * 
- * @input 
- * - 연산의 개수 N [1, 100,000]
- * - x가 0이 아니면 배열에 x를 넣는 연산이다.
- * - x가 0이라면 배열에서 절댓값이 가장 작은 값을 출력하고 제거하는 연산이다.
- * 
- * @output   
- * - 입력에서 x가 0일 때 연산 결과를 출력한다.
- * - 배열이 비어있을 때는 0을 출력한다.
- * 
- * @time_complex O(N)
- * @perf 29028kb, 452ms
- */
 
 public class Main {
 
-	static int N;
-	static Queue<Integer> heap = new PriorityQueue<>((i1, i2) -> {
-		int abs1 = Math.abs(i1), abs2 = Math.abs(i2);
-		return (abs1 == abs2) ? Integer.compare(i1, i2) : Integer.compare(abs1, abs2);
-	});
-	
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		
-		N = Integer.parseInt(br.readLine());
-		for (int i = 0; i < N; i++) {
-			int x = Integer.parseInt(br.readLine());
-			if (x != 0) heap.offer(x);
-			else sb.append(heap.isEmpty() ? 0 : heap.poll()).append("\n");
-		}
-		System.out.println(sb);
-	}
+    static class Node {
+        int absNum, num;
+        Node(int num) {
+            this.absNum = Math.abs(num);
+            this.num = num;
+        }
+    }
+
+    static class AbsHeap {
+        Node[] heap = new Node[100_010];
+        int size = 0;
+
+        void insert(int x) {
+            int idx = ++size;
+            int pIdx = idx >> 1;
+            while (idx > 1 &&
+            (Math.abs(x) < heap[pIdx].absNum ||
+            (Math.abs(x) == heap[pIdx].absNum && x < heap[pIdx].num))) {
+                heap[idx] = heap[pIdx];
+                idx = pIdx;
+                pIdx = pIdx >> 1;
+            }
+            heap[idx] = new Node(x);
+        }
+
+        int remove() {
+            if (size < 1) {
+                return 0;
+            }
+            int result = heap[1].num;
+            Node target = heap[size--];
+            int idx = 1;
+            int cIdx = idx << 1;
+            while (cIdx <= size) {
+                if (cIdx < size && heap[cIdx].absNum > heap[cIdx + 1].absNum ||
+                (heap[cIdx].absNum == heap[cIdx + 1].absNum && heap[cIdx].num > heap[cIdx + 1].num)) {
+                    ++cIdx;
+                }
+                if (heap[cIdx].absNum > target.absNum ||
+                (heap[cIdx].absNum == target.absNum && heap[cIdx].num > target.num)) {
+                    break;
+                }
+                heap[idx] = heap[cIdx];
+                idx = cIdx;
+                cIdx = cIdx << 1;
+            }
+            heap[idx] = target;
+            return result;
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+
+        int N = Integer.parseInt(br.readLine());
+        AbsHeap absHeap = new AbsHeap();
+        for (int i = 0; i < N; i++) {
+            int x = Integer.parseInt(br.readLine());
+            if (x != 0) {
+                absHeap.insert(x);
+            } else {
+                sb.append(absHeap.remove()).append("\n");
+            }
+        }
+        System.out.println(sb);
+    }
 }
