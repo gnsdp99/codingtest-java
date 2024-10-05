@@ -69,9 +69,6 @@ public class Main {
     }
 
     static void find(int src) {
-        boolean[] visited = new boolean[V + 1];
-        visited[src] = true;
-
         PriorityQueue<Pair> pq = new PriorityQueue();
         pq.offer(new Pair(src, 0));
 
@@ -80,8 +77,6 @@ public class Main {
             if (p.dist > dist[p.num]) {
                 continue;
             }
-
-            visited[p.num] = true;
 
             for (Node adj = adjList[p.num]; adj != null; adj = adj.next) {
                 int sum = p.dist + adj.weight;
