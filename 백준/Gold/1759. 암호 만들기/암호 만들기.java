@@ -27,11 +27,11 @@ public class Main {
 
         Arrays.sort(alphabet);
 
-        find(new char[L], 0, -1, 0, 0);
+        find(new char[L], 0, 0, 0, 0);
         System.out.println(sb);
     }
 
-    static void find(char[] password, int idx, int prev, int cntVowel, int cntConsonant) {
+    static void find(char[] password, int idx, int start, int cntVowel, int cntConsonant) {
         if (idx == L) {
             if (cntVowel >= 1 && cntConsonant >= 2) {
                 sb.append(String.valueOf(password)).append("\n");
@@ -39,12 +39,12 @@ public class Main {
             return;
         }
 
-        for (int i = prev + 1; i < C; i++) {
+        for (int i = start; i <= C - L + idx; i++) {
             password[idx] = alphabet[i];
             if (isVowel(alphabet[i])) {
-                find(password, idx + 1, i, cntVowel + 1, cntConsonant);
+                find(password, idx + 1, i + 1, cntVowel + 1, cntConsonant);
             } else {
-                find(password, idx + 1, i, cntVowel, cntConsonant + 1);
+                find(password, idx + 1, i + 1, cntVowel, cntConsonant + 1);
             }
         }
     }
