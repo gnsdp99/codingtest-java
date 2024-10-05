@@ -11,7 +11,6 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
@@ -37,6 +36,10 @@ public class Main {
         if (cnt > ans) {
             ans = cnt;
         }
+        
+        if (ans == 26) {
+            return;
+        }
 
         for (int d = 0; d < 4; d++) {
             int nr = r + delta[d][0];
@@ -50,6 +53,7 @@ public class Main {
             if ((visited & next) != 0) {
                 continue;
             }
+
             move(nr, nc, visited | next, cnt + 1);
         }
     }
