@@ -7,6 +7,7 @@ public class Main {
 
     static int R, C, ans;
     static int[][] board;
+    static int[][] path;
     static int[][] delta = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     public static void main(String[] args) throws IOException {
@@ -18,6 +19,7 @@ public class Main {
         C = Integer.parseInt(st.nextToken());
 
         board = new int[R][C];
+        path = new int[R][C];
 
         for (int i = 0; i < R; i++) {
             String str = br.readLine();
@@ -36,10 +38,8 @@ public class Main {
         if (cnt > ans) {
             ans = cnt;
         }
-        
-        if (ans == 26) {
-            return;
-        }
+
+        path[r][c] = visited;
 
         for (int d = 0; d < 4; d++) {
             int nr = r + delta[d][0];
@@ -51,6 +51,9 @@ public class Main {
 
             int next = 1 << board[nr][nc];
             if ((visited & next) != 0) {
+                continue;
+            }
+            if (((visited | next) == path[nr][nc])) {
                 continue;
             }
 
